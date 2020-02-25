@@ -1,0 +1,35 @@
+{
+  "name": "olympic",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "node-sass": "^4.13.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-loadable": "^5.5.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "predeploy-gh-pages": "npm run build",
+    "deploy-gh-pages": "npm run deploy-gh-pages-only",
+    "deploy-gh-pages-only": "gh-pages -d build",
+    "preserve-build": "npm run build",
+    "serve-build": "npm run serve-build-only",
+    "serve-build-only": "serve -s build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
