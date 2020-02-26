@@ -339,6 +339,7 @@ const GameCanvas = () => {
         backgroundTimer.current = 0;
         shakeCounter.current = 0;
         score.current = 0;
+        cactusArray.current = [0,0,0,0,0];
         break;
       case gameStatus.result:
         // show result

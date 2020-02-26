@@ -187,13 +187,15 @@ io.on('connection', socket => {
     }
   });
   socket.on('shake', () => {
-    const shakeArray = new Array(roomSettings['playerCount']).fill(0);
-    const playerIdx = roomStatus['players'].findIndex((player) => (player.socketId === socket.id));
-    if (playerIdx >= 0) {
-      shakeArray[playerIdx] = 1;
-      gameResult[playerIdx] += 1;
+    if (roomStatus['status'] === gameStatus['started']) {
+      const shakeArray = new Array(roomSettings['playerCount']).fill(0);
+      const playerIdx = roomStatus['players'].findIndex((player) => (player.socketId === socket.id));
+      if (playerIdx >= 0) {
+        shakeArray[playerIdx] = 1;
+        gameResult[playerIdx] += 1;
+      }
+      io.emit('playersShake', shakeArray);
     }
-    io.emit('playersShake', shakeArray);
   })
   socket.on('debug', (data) => {
     switch (data['type']) {
@@ -213,12 +215,14 @@ io.on('connection', socket => {
         break;
       }
       case 'shake': {
-        const playerIdx = roomStatus['players'].findIndex((player) => (player.playerId === data['data']['playerId']));
-        if (playerIdx >= 0) {
-          const shakeArray = new Array(roomSettings['playerCount']).fill(0);
-          shakeArray[playerIdx] = 1;
-          gameResult[playerIdx] += 1;
-          io.emit('playersShake', shakeArray);
+        if (roomStatus['status'] === gameStatus['started']) {
+          const playerIdx = roomStatus['players'].findIndex((player) => (player.playerId === data['data']['playerId']));
+          if (playerIdx >= 0) {
+            const shakeArray = new Array(roomSettings['playerCount']).fill(0);
+            shakeArray[playerIdx] = 1;
+            gameResult[playerIdx] += 1;
+            io.emit('playersShake', shakeArray);
+          }
         }
         break;
       }

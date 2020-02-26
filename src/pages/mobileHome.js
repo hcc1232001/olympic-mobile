@@ -21,6 +21,7 @@ const MobileHomePage = () => {
   const [direction, speed, angle, permissionGranted, setPermissionGranted] = useDeviceOrientation();
   const [gameStage, setGameStage] = useState(gameStatus['idle']);
   const [score, setScore] = useState(0);
+  const [isJoined, setIsJoined] = useState(false);
   const playerId = useParams('playerId');
   const socket = useRef(null);
   const requestPermission = () => {
@@ -71,6 +72,16 @@ const MobileHomePage = () => {
             callback: (score) => {
               setScore(score);
             }
+          },
+          {
+            listener: 'playersInfo',
+            callback: (players) => {
+              players.forEach(player => {
+                if (player['playerId'] === playerId['playerId']) {
+                  setIsJoined(player['joined']);
+                }
+              });
+            }
           }
         ]
       })
@@ -91,7 +102,9 @@ const MobileHomePage = () => {
         <button className={styles.joinButton} onClick={joinRoom}>Join Game!</button>
       ),
       [gameStatus.waiting]: (
-        <div className={styles.joinButton}>choose game here</div>
+        isJoined?
+        <div className={styles.joinButton}>choose game here</div>:
+        <button className={styles.joinButton} onClick={joinRoom}>Join Game!</button>
       ),
       [gameStatus.ready]: (
         <div className={styles.joinButton}>Ready</div>
