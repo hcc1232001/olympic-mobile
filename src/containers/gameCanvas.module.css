@@ -1,0 +1,12 @@
+.gameCanvasWrapper {
+  width: 800px;
+  height: 400px;
+  margin: 0 auto;
+  padding: 4px;
+  border: 1px solid #535353;
+}
+.gameCanvas {
+  width: 790px;
+  height: 390px;
+  margin: 0 auto;
+}

@@ -1,5 +1,6 @@
 const routes = {
-  home: '/home'
+  home: '/home',
+  mobileHome: '/mobileHome/:playerId?',
 };
 
 export default routes;
