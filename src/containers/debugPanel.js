@@ -86,6 +86,7 @@ const DebugPanel = () => {
             for (let i = 0; i < tempScoreArray.length; i++) {
               tempScoreArray[i] = 0;
             }
+            setScoreArray([0, 0, 0, 0, 0]);
           }
         }
       },
@@ -129,7 +130,7 @@ const DebugPanel = () => {
             tempScoreArray[idx] += score;
             // }
           })
-          console.log(tempScoreArray);
+          // console.log(tempScoreArray);
           setScoreArray([...tempScoreArray]);
         }
       }
