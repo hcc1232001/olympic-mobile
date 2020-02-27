@@ -19,7 +19,14 @@ const gameStatus = {
   result:  4,
   offline: 5,
 };
-
+const waitingTimer = {
+  [gameStatus.idle]:    5,
+  [gameStatus.waiting]: 30,
+  [gameStatus.ready]:   3,
+  [gameStatus.started]: 60,
+  [gameStatus.result]:  30,
+  [gameStatus.offline]: 5,
+};
 const fps = 60;
 
 const playerColor = [
@@ -105,9 +112,19 @@ const GameCanvas = () => {
   let shakeCounter = useRef(0);
   let score = useRef(0);
   let backgroundTimer = useRef(0);
+  let timeStarted = useRef(0);
   const drawTrex = (status) => {
     ctx.current.drawImage(cachedCanvas, ...TrexPos[status], 88, 196, 88, 94);
     // console.log(TrexPos[0]);
+  };
+  const drawTimer = (total) => {
+    const now = Date.now();
+    const delta = (now - timeStarted.current) / 1000;
+    const timeRemain = Math.max(total - ~~delta, 0);
+    const timeRemainArray = timeRemain.toString().padStart(3, '0').split('');
+    timeRemainArray.forEach((num, idx) => {
+      ctx.current.drawImage(cachedCanvas, ...numPos[num], 11 + 22 * idx, 11, numPos[num][2], numPos[num][3]);
+    })
   };
   const drawFloor = (status) => {
     const targetX = (status) % floorPos[2];
@@ -202,6 +219,12 @@ const GameCanvas = () => {
     ctx.current.clearRect(0, 0, canvas.current.width, canvas.current.height);
     switch (gameStage) {
       case gameStatus.idle:
+        backgroundTimer.current = 0;
+        shakeCounter.current = 0;
+        score.current = 0;
+        drawQRCode();
+        // drawTimer(waitingTimer[gameStage]);
+        break;
       case gameStatus.waiting:
         // show qrcode
         // ctx.current.font = "80px Georgia";
@@ -210,6 +233,7 @@ const GameCanvas = () => {
         shakeCounter.current = 0;
         score.current = 0;
         drawQRCode();
+        drawTimer(waitingTimer[gameStage]);
         break;
       case gameStatus.ready:
         // get set go
@@ -236,6 +260,7 @@ const GameCanvas = () => {
         drawTrex(~~((backgroundTimer.current) / fps * trexMultiplier) % 2 + 2);
         drawCactus();
         drawScore(score.current);
+        drawTimer(waitingTimer[gameStage]);
         if (cloudArray.length < 1) {
           cloudArray.push(
             [0.5, Math.random() * 100, (backgroundTimer.current) / fps * cloudMultipler * 0.5]
@@ -340,6 +365,7 @@ const GameCanvas = () => {
         shakeCounter.current = 0;
         score.current = 0;
         cactusArray.current = [0,0,0,0,0];
+        timeStarted.current = Date.now();
         break;
       case gameStatus.result:
         // show result
