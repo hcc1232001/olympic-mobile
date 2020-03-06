@@ -20,9 +20,14 @@ const useDeviceMotion = () => {
   let lastAccVec3 = [null, null, null];
   // let lastAccDir = 0;
   const threshold = 0.5;
+  const prevTime = useRef(0);
+
   const updateDeviceStatus = (event) => {
     const {x, y, z} = event.acceleration;
-    const timeDelta = Math.max(event.interval, 1 / 60);
+    const timeNow = Date.now();
+    const timeDelta = timeNow - prevTime.current;
+    prevTime.current = timeNow;
+    // const timeDelta = event.interval;
     // alert(`${x}, ${y}, ${z}`);
     
     let deltaX = Math.abs(x - lastAccVec3[0]);

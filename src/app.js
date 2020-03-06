@@ -15,6 +15,7 @@ const App = () => {
       <Route path={routes.mobileHome} render={getRenderPropForRoute('mobileHome')} />
       <Route path={routes.landing} render={getRenderPropForRoute('landing')} />
       <Route path={routes.debug} render={getRenderPropForRoute('debug')} />
+      <Route path={routes.test} render={getRenderPropForRoute('test')} />
       <Redirect to={routes.landing} />
     </Switch>
   </BrowserRouter>;
