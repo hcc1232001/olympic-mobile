@@ -110,7 +110,7 @@ class Room {
             gameIdxToRand.push(this.gameChoices[idx]);
           }
         });
-        const finalGameIdx = Math.round(Math.random() * gameIdxToRand.length);
+        const finalGameIdx = Math.floor(Math.random() * gameIdxToRand.length);
         this.gameId = gameIdxToRand[finalGameIdx];
         this.emit('gameSelected', this.gameId);
         if (stageTimer[newStage] > 0) {
