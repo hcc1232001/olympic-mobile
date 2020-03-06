@@ -22,14 +22,14 @@ const useDeviceMotion = () => {
   const threshold = 0.5;
   const updateDeviceStatus = (event) => {
     const {x, y, z} = event.acceleration;
-    const timeDelta = event.interval;
+    const timeDelta = Math.max(event.interval, 1 / 60);
     // alert(`${x}, ${y}, ${z}`);
     
     let deltaX = Math.abs(x - lastAccVec3[0]);
     let deltaY = Math.abs(y - lastAccVec3[1]);
     let deltaZ = Math.abs(z - lastAccVec3[2]);
     // let currentAccDir = Math.sign(y - lastAccVec3[1]);
-    if(deltaY / timeDelta > threshold) {
+    if (deltaY / timeDelta > threshold) {
       setMoveCounter((prevMoveCounter) => {
         return prevMoveCounter + 1;
       })
