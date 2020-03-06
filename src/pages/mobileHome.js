@@ -53,7 +53,7 @@ const MobileHomePage = () => {
       // setPermissionGranted(true);
       requestPermission();
     } else {
-      socket.current.emit('joinRoom', playerId);
+      // socket.current.emit('joinRoom', playerId);
     }
   }
   useEffect(() => {
