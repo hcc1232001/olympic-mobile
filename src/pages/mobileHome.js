@@ -77,6 +77,9 @@ const MobileHomePage = () => {
             listener: 'gameStage',
             callback: (stageId) => {
               setGameStage(stageId);
+              if (stageId === gameStatus.selecting) {
+                setGameSelected(0);
+              }
             }
           },
           {

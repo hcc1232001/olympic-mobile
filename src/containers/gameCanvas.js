@@ -29,12 +29,12 @@ const waitingTimer = {
   // [gameStatus.result]:  30,
   // [gameStatus.offline]: 5,
   [gameStatus.idle]:      -1,
-  [gameStatus.waiting]:   10,
+  [gameStatus.waiting]:   20,
   [gameStatus.selecting]: 10,
   [gameStatus.selected]:  5,
   [gameStatus.ready]:     5,
   [gameStatus.started]:   30,
-  [gameStatus.result]:    15,
+  [gameStatus.result]:    10,
   [gameStatus.offline]:   -1,
 };
 const fps = 60;

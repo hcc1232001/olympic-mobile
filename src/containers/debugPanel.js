@@ -106,6 +106,8 @@ const DebugPanel = () => {
                 tempScoreArray[i] = 0;
               }
               setScoreArray([0, 0, 0, 0, 0]);
+            } else if (stageId === gameStatus.selecting) {
+              setChoicesArray([0, 0, 0, 0, 0]);
             }
           }
         },

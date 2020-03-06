@@ -2,7 +2,7 @@
 const { v1: uuid } = require('uuid');
 const mysql = require('mysql');
 const dbConfig = require('../config/dbConfig.js');
-const roomConfigs = require('../config/roomConfigs.js');
+// const roomConfigs = require('../config/roomConfigs.js');
 const log = console.log;
 
 const gameStatus = {
@@ -17,12 +17,12 @@ const gameStatus = {
 };
 const stageTimer = {
   [gameStatus.idle]:      -1,
-  [gameStatus.waiting]:   10,
+  [gameStatus.waiting]:   20,
   [gameStatus.selecting]: 10,
   [gameStatus.selected]:  5,
   [gameStatus.ready]:     5,
   [gameStatus.started]:   30,
-  [gameStatus.result]:    15,
+  [gameStatus.result]:    10,
   [gameStatus.offline]:   -1,
   // waitingTimeout: 30,
   // readyTimeout:   3,
@@ -152,13 +152,12 @@ class Room {
           }, stageTimer[newStage] * 1000);
         }
         // save to db here
-        this.saveGameResult();
+        // this.saveGameResult();
         break;
       case gameStatus['offline']:
         break;
     }
-    this.emit('gameStage', this.roomStatus);
-
+    setImmediate(() => this.emit('gameStage', this.roomStatus));
   }
   clearAllTimeout() {
     clearTimeout(this.stageTimer);

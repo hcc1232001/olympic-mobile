@@ -15,7 +15,7 @@
     "socket.io-client": "^2.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node ./server/app.js",
     "build": "react-scripts build",
     "predeploy-gh-pages": "npm run build",
     "deploy-gh-pages": "npm run deploy-gh-pages-only",
