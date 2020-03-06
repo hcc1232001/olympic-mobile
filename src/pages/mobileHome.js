@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {useParams} from 'react-router-dom';
-import useDeviceOrientation from 'components/useDeviceOrientation';
+// import useDeviceOrientation from 'components/useDeviceOrientation';
+import useDeviceMotion from 'components/useDeviceMotion';
 
 import withSocketio from 'components/withSocketio';
 
@@ -19,7 +20,7 @@ const gameStatus = {
   offline:   7, // should be not able to get this signal
 }
 const MobileHomePage = () => {
-  const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceOrientation();
+  const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceMotion();
   // const [permissionGranted, setPermissionGranted] = useState(false);
   const [gameStage, setGameStage] = useState(gameStatus['idle']);
   const [gameSelected, setGameSelected] = useState(0);
