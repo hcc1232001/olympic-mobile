@@ -2,8 +2,8 @@
   height: 400px;
   width: 800px;
   border: 1px solid #535353;
-  border-top-width: 5px;
-  border-top-style: double;
+  /* border-top-width: 5px; */
+  /* border-top-style: double; */
   margin: -1px auto 0;
   padding: 10px;
 }
@@ -15,6 +15,13 @@
 .row {
   padding: 10px 0;
 }
+.roomId {
+  padding: 0.2em 0.5em;
+  border-radius: 0.3em;
+  background-color: #535353;
+  color: #FFFFFF;
+  cursor: default;
+}
 .qrblock {
   display: inline-block;
   width: 20%;
@@ -22,9 +29,14 @@
   vertical-align: top;
   cursor: pointer;
 }
+.qrblock img {
+  vertical-align: top;
+  margin-bottom: 5px;
+}
 .qrplaceholder {
   width: 150px;
   height: 150px;
+  margin-bottom: 5px;
   border-width: 1px;
   border-style: solid;
   border-color: currentColor;
@@ -36,9 +48,10 @@
 .playerNotJoined {
   display: inline-flex;
   flex-direction: column;
-  width: 18%;
-  margin: 0 1%;
-  padding: 3.2em 0;
+  width: 145px;
+  margin: 0 5px;
+  /* padding: 3.2em 0; */
+  height: 148px;
   text-align: center;
   vertical-align: top;
   border-width: 1px;
@@ -56,4 +69,16 @@
   cursor: not-allowed;
   opacity: 0.3;
   line-height: 2.4em;
+}
+
+.gameSelectingBtn {
+  background-color: #FFFFFF;
+  appearance: none;
+  border: 1px solid #535353;
+  padding: 10px 30px;
+  outline: 0;
+}
+.gameSelected {
+  background-color: #535353;
+  color: #FFFFFF;
 }

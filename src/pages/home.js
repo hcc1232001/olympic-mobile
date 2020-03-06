@@ -4,10 +4,10 @@ import GameCanvas from 'containers/gameCanvas';
 import DebugPanel from 'containers/debugPanel';
 
 const HomePage = () => {
-  return <div>
+  return <>
     <GameCanvas />
-    <DebugPanel />
-  </div>;
+    {/* <DebugPanel /> */}
+  </>;
 }
 
 export default HomePage;

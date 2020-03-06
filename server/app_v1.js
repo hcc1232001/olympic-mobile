@@ -5,10 +5,7 @@ const https = require('https');
 const io = require('socket.io')();
 const { v1: uuid } = require('uuid');
 const mysql = require('mysql');
-
-const RoomManager = require('./components/roomManager.js');
-
-const port = process.env.PORT || 3003;
+const port = process.env.PORT || 3002;
 
 const log = console.log;
 
@@ -23,12 +20,12 @@ const httpsOption = {
 const httpsServer = https.createServer(httpsOption, (req, res) => {
   res.writeHead(200);
   if (req.url === '/') req.url = 'index.html';
-  const filePath = __dirname + '/../build/' + req.url;
+  const filePath = __dirname + '/../buildv1/' + req.url;
   if (fs.existsSync(filePath)) {
     const stream = fs.createReadStream(filePath);
     stream.pipe(res);
   } else {
-    res.end(fs.readFileSync(__dirname + '/../build/index.html'));
+    res.end(fs.readFileSync(__dirname + '/../buildv1/index.html'));
   }
 });
 httpsServer.listen(port);
@@ -55,6 +52,11 @@ const roomSettings = {
   resultTimeout:  30,
   endedTimeout:   5,
 };
+const roomStatus = {
+  name: 'shake01',
+  status: gameStatus.offline,
+  players: []
+};
 
 
 /**
@@ -80,8 +82,6 @@ io.use((socket, next) => {
 */
 // end of using middleware
 
-const roomManager = new RoomManager(io);
-/*
 let hostsList = [];
 let clientsList = [];
 let gameResult = [];
@@ -104,6 +104,9 @@ const clearAllTimeout = () => {
   resultTimeout = null;
 }
 const updateGameStage = (newStage) => {
+  if (roomStatus['status'] === newStage) {
+    return;
+  }
   roomStatus['status'] = newStage;
   io.emit('gameStage', roomStatus['status']);
   switch (newStage) {
@@ -285,4 +288,3 @@ io.on('connection', socket => {
     }
   });
 });
-*/

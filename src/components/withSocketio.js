@@ -5,7 +5,7 @@ const withSocketio = ({
   eventListeners,
   eventEmitters
 }) => {
-  const socket = io(host);
+  const socket = io(host, {secure: false});
   
   // console.log(socket);
   
@@ -14,7 +14,8 @@ const withSocketio = ({
     // socket.emit('joinRoom', props.match.match.params.userId);
     // wait join result msg from server
     eventEmitters.forEach(event => {
-      socket.emit(event.emitter, event.data);
+      const ack = (typeof(event.ack) === "function"? event.ack: null);
+      socket.emit(event.emitter, event.data, ack);
     });
   });
 

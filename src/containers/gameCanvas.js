@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {generatePath} from 'react-router-dom';
+import {useHistory, useParams, generatePath} from 'react-router-dom';
 import QRCode from 'qrcode';
 
 import withSocketio from 'components/withSocketio';
@@ -12,20 +12,30 @@ import spriteImageUrl from 'media/sprite/offline-sprite-2x.png';
 import styles from './gameCanvas.module.css';
 
 const gameStatus = {
-  idle:    0,
-  waiting: 1,
-  ready:   2,
-  started: 3,
-  result:  4,
-  offline: 5,
-};
+  idle:      0,
+  waiting:   1,
+  selecting: 2,
+  selected:  3,
+  ready:     4,
+  started:   5,
+  result:    6,
+  offline:   7, // should be not able to get this signal
+}
 const waitingTimer = {
-  [gameStatus.idle]:    5,
-  [gameStatus.waiting]: 30,
-  [gameStatus.ready]:   3,
-  [gameStatus.started]: 60,
-  [gameStatus.result]:  30,
-  [gameStatus.offline]: 5,
+  // [gameStatus.idle]:    5,
+  // [gameStatus.waiting]: 30,
+  // [gameStatus.ready]:   3,
+  // [gameStatus.started]: 60,
+  // [gameStatus.result]:  30,
+  // [gameStatus.offline]: 5,
+  [gameStatus.idle]:      -1,
+  [gameStatus.waiting]:   10,
+  [gameStatus.selecting]: 10,
+  [gameStatus.selected]:  5,
+  [gameStatus.ready]:     5,
+  [gameStatus.started]:   30,
+  [gameStatus.result]:    15,
+  [gameStatus.offline]:   -1,
 };
 const fps = 60;
 
@@ -93,8 +103,11 @@ const GameCanvas = () => {
   const ctx = useRef();
   const animationFrame = useRef();
 
+  const {roomId} = useParams();
+
   const qrcodeArray = useRef([]);
   const playerJoined = useRef([]);
+  let history = useHistory();
   let cloudArray = [];
   let birdArray = [];
   let cactusArray = useRef([0,0,0,0,0]);
@@ -113,6 +126,8 @@ const GameCanvas = () => {
   let score = useRef(0);
   let backgroundTimer = useRef(0);
   let timeStarted = useRef(0);
+  let roomName = useRef(roomId);
+  let gameSelected = useRef(0);
   const drawTrex = (status) => {
     ctx.current.drawImage(cachedCanvas, ...TrexPos[status], 88, 196, 88, 94);
     // console.log(TrexPos[0]);
@@ -193,12 +208,59 @@ const GameCanvas = () => {
     });
   };
   
+  const drawLanding = () => {
+    const qrcode = qrcodeArray.current[2];
+    ctx.current.drawImage(qrcode, 320, 180);
+    ctx.current.save();
+    ctx.current.font = '30px PressStart';
+    ctx.current.textAlign = "center";
+    // ctx.current.fillStyle = '#FF0000';
+    // ctx.current.fillText('Shake Shake Game', canvas.current.width / 2 - 5 + Math.random() * 10, 110 - 5 + Math.random() * 10);
+    // ctx.current.fillStyle = '#0000FF';
+    // ctx.current.fillText('Shake Shake Game', canvas.current.width / 2 - 5 + Math.random() * 10, 110 - 5 + Math.random() * 10);
+    // ctx.current.fillStyle = '#000000';
+    ctx.current.fillText('Shake Shake Game', canvas.current.width / 2, 110);
+    ctx.current.restore();
+  }
+  const drawSelecting = () => {
+    ctx.current.save();
+    ctx.current.font = '30px PressStart';
+    ctx.current.textAlign = "center";
+    ctx.current.fillText('Select Game', canvas.current.width / 2, canvas.current.height / 2 - 15);
+    ctx.current.fillText('on Your Device', canvas.current.width / 2, canvas.current.height / 2 + 45);
+    ctx.current.restore();
+  }
+  
+  const drawSelected = () => {
+    ctx.current.save();
+    ctx.current.font = '30px PressStart';
+    ctx.current.textAlign = "center";
+    ctx.current.fillText(`Game ${gameSelected.current + 1}`, canvas.current.width / 2, canvas.current.height / 2 + 30);
+    ctx.current.restore();
+  }
+  
   const drawResult = (score) => {
-    const scoreArray = score.toString().padStart(5, '0').split('');
-    scoreArray.forEach((num, idx) => {
-      ctx.current.drawImage(cachedCanvas, ...numPos[num], (canvas.current.width - 22 * scoreArray.length) / 2 + 22 * idx, (390 - numPos[num][3]) / 2, numPos[num][2], numPos[num][3]);
-    })
+    ctx.current.save();
+    ctx.current.font = '30px PressStart';
+    ctx.current.textAlign = "center";
+    ctx.current.fillText('Score', canvas.current.width / 2, canvas.current.height / 2 - 15);
+    ctx.current.fillText(score.toString().padStart(5, '0'), canvas.current.width / 2, canvas.current.height / 2 + 45);
+    ctx.current.restore();
+    // const scoreArray = score.toString().padStart(5, '0').split('');
+    // scoreArray.forEach((num, idx) => {
+    //   ctx.current.drawImage(cachedCanvas, ...numPos[num], (canvas.current.width - 22 * scoreArray.length) / 2 + 22 * idx, (390 - numPos[num][3]) / 2, numPos[num][2], numPos[num][3]);
+    // })
   };
+
+  const drawRoomName = () => {
+    ctx.current.save();
+    ctx.current.font = '12px PressStart';
+    ctx.current.textAlign = "left";
+    // ctx.current.fillText('Shake Shake Game', canvas.current.width / 2 - 5 + Math.random() * 10, 120 - 5 + Math.random() * 10);
+    ctx.current.fillText(`ID:${roomName.current}`, 16, canvas.current.height - 8);
+    ctx.current.restore();
+    
+  }
   const addScore = (countArray) => {
     countArray.forEach((count, idx) => cactusArray.current[idx] += count * 2);
     const countSum = countArray.reduce((accumulator, currentValue) => accumulator + currentValue);
@@ -217,12 +279,14 @@ const GameCanvas = () => {
   const render = () => {
     animationFrame.current = requestAnimationFrame(render);
     ctx.current.clearRect(0, 0, canvas.current.width, canvas.current.height);
+    drawRoomName();
     switch (gameStage) {
       case gameStatus.idle:
         backgroundTimer.current = 0;
         shakeCounter.current = 0;
         score.current = 0;
-        drawQRCode();
+        // drawQRCode();
+        drawLanding();
         // drawTimer(waitingTimer[gameStage]);
         break;
       case gameStatus.waiting:
@@ -234,6 +298,14 @@ const GameCanvas = () => {
         score.current = 0;
         drawQRCode();
         drawTimer(waitingTimer[gameStage]);
+        break;
+      case gameStatus.selecting:
+        drawTimer(waitingTimer[gameStage]);
+        drawSelecting();
+        break;
+      case gameStatus.selected:
+        drawTimer(waitingTimer[gameStage]);
+        drawSelected();
         break;
       case gameStatus.ready:
         // get set go
@@ -274,7 +346,9 @@ const GameCanvas = () => {
         break;
       case gameStatus.result:
         // show result
+
         drawResult(score.current);
+        drawTimer(waitingTimer[gameStage]);
         // ctx.current.font = "80px monospace";
         // ctx.current.fillText(score.current.toString(), 300, 200);
         break;
@@ -292,7 +366,14 @@ const GameCanvas = () => {
         {
           emitter: 'createRoom',
           data: {
-            roomId: 'shake01'
+            roomId: roomId
+          },
+          ack: (newRoomName) => {
+            console.log('ack', newRoomName);
+            if (newRoomName !== roomId) {
+              roomName.current = newRoomName;
+              history.push(generatePath(routes.home, {roomId: newRoomName}));
+            }
           }
         }
       ],
@@ -300,6 +381,12 @@ const GameCanvas = () => {
         {
           listener: 'disconnect',
           callback: () => console.log('disconnect')
+        },
+        {
+          listener: 'roomCreated',
+          callback: (newRoomName) => {
+            roomName.current = newRoomName;
+          }
         },
         {
           listener: 'gameStage',
@@ -312,12 +399,14 @@ const GameCanvas = () => {
           callback: (playersInfo) => {
             qrcodeArray.current.length = 0;
             playersInfo.forEach((playerInfo, idx) => {
+              console.log(playerInfo);
               const dummyCanvas = document.createElement('canvas');
               dummyCanvas.width = 150;
               dummyCanvas.height = 150;
               if (playerInfo['joined'] === false) {
                 playerJoined.current[idx] = false;
-                const joinGamePath = window.location.origin + window.location.pathname + '#' + generatePath(routes.mobileHome, {playerId: playerInfo['playerId']});
+                // const joinGamePath = window.location.origin + window.location.pathname + '#' + generatePath(routes.mobileHome, {playerId: playerInfo['playerId']});
+                const joinGamePath = window.location.origin + generatePath(routes.mobileHome, {playerId: playerInfo['playerId']});
                 QRCode.toCanvas(
                   dummyCanvas,
                   joinGamePath,
@@ -342,10 +431,14 @@ const GameCanvas = () => {
           }
         },
         {
+          listener: 'gameSelected',
+          callback: (gameId) => {
+            gameSelected.current = gameId;
+          }
+        },
+        {
           listener: 'playersShake',
           callback: (shakeArray) => {
-            // console.log(shakeArray);
-            // console.log(gameStage);
             addScore(shakeArray);
           }
         }
@@ -367,8 +460,11 @@ const GameCanvas = () => {
         cactusArray.current = [0,0,0,0,0];
         timeStarted.current = Date.now();
         break;
+      case gameStatus.selecting:
+      case gameStatus.selected:
       case gameStatus.result:
         // show result
+        timeStarted.current = Date.now();
         break;
       case gameStatus.offline:
     }
@@ -380,11 +476,6 @@ const GameCanvas = () => {
 
   return <div className={styles.gameCanvasWrapper}>
     <canvas className={styles.gameCanvas} ref={setGameCanvas} />
-    {/* <button onClick={()=>addScore([1,0,0,0,0])}>Shake 1</button>
-    <button onClick={()=>addScore([1,1,1,1,1])}>Shake 5</button>
-    <button onClick={()=>addScore([2,2,2,2,2])}>Shake 10</button>
-    <button onClick={()=>addScore([3,3,3,3,3])}>Shake 15</button>
-    <button onClick={()=>addScore([6,6,6,6,6])}>Shake 30</button> */}
   </div>;
 }
 

@@ -1,3 +1,7 @@
+@font-face {
+  font-family: PressStart;
+  src: url(./media/fonts/PressStart2P-Regular.ttf);
+}
 * {
   box-sizing: border-box;
 }

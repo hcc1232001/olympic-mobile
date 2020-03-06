@@ -9,22 +9,27 @@ import config from 'globals/config';
 import styles from './mobileHome.module.css';
 
 const gameStatus = {
-  idle:    0,
-  waiting: 1,
-  ready:   2,
-  started: 3,
-  result:  4,
-  offline: 5,
-};
-
+  idle:      0,
+  waiting:   1,
+  selecting: 2,
+  selected:  3,
+  ready:     4,
+  started:   5,
+  result:    6,
+  offline:   7, // should be not able to get this signal
+}
 const MobileHomePage = () => {
-  const [direction, speed, angle, permissionGranted, setPermissionGranted] = useDeviceOrientation();
+  const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceOrientation();
+  // const [permissionGranted, setPermissionGranted] = useState(false);
   const [gameStage, setGameStage] = useState(gameStatus['idle']);
+  const [gameSelected, setGameSelected] = useState(0);
   const [score, setScore] = useState(0);
   const [isJoined, setIsJoined] = useState(false);
   const playerId = useParams('playerId');
   const socket = useRef(null);
   const requestPermission = () => {
+    // setPermissionGranted(true);
+    // temp disable
     if (typeof(DeviceOrientationEvent) === "function" && typeof(DeviceOrientationEvent.requestPermission) === "function") {
       // alert('DeviceOrientationEvent.requestPermission');
       DeviceOrientationEvent.requestPermission().then(response => {
@@ -45,6 +50,7 @@ const MobileHomePage = () => {
   };
   const joinRoom = () => {
     if (!permissionGranted) {
+      // setPermissionGranted(true);
       requestPermission();
     } else {
       socket.current.emit('joinRoom', playerId);
@@ -57,7 +63,13 @@ const MobileHomePage = () => {
         eventEmitters: [
           {
             emitter: 'joinRoom',
-            data: playerId
+            data: playerId,
+            ack: (result) => {
+              // alert(result);
+              if (result === "failed, scan again") {
+                alert("Room not found, please Scan the QRcode again.")
+              }
+            }
           }
         ],
         eventListeners: [
@@ -82,18 +94,39 @@ const MobileHomePage = () => {
                 }
               });
             }
-          }
+          },
+          {
+            listener: 'gameChoice',
+            callback: (gameIdx) => {
+              setGameSelected(gameIdx);
+            }
+          },
+          {
+            listener: 'gameSelected',
+            callback: (gameId) => {
+              setGameSelected(gameId);
+              // gameSelected.current = gameId;
+            }
+          },
         ]
       })
     }
   }, [permissionGranted]);
   useEffect(() => {
-    if (speed > 5) {
-      socket.current.emit('shake');
+    if (moveCounter > 2) {
+      // socket.current.emit('shake');
+      shake();
+      setMoveCounter(0);
     }
-  }, [direction])
+  }, [moveCounter]);
   const shake = () => {
     socket.current.emit('shake');
+  }
+  const selectGame = (gameIdx) => {
+    socket.current.emit('selectGame', gameIdx, (newGameIdx) => {
+      setGameSelected(newGameIdx);
+    });
+
   }
   return <div className={styles.wrapper}>
     {/* <div>{gameStage} {permissionGranted? 'true': 'false'}</div> */}
@@ -103,8 +136,20 @@ const MobileHomePage = () => {
       ),
       [gameStatus.waiting]: (
         isJoined?
-        <div className={styles.joinButton}>choose game here</div>:
+        <div className={styles.joinButton}>Wait for other players</div>:
         <button className={styles.joinButton} onClick={joinRoom}>Join Game!</button>
+      ),
+      [gameStatus.selecting]: (
+        <div className={styles.joinButton}>
+          <button onClick={()=>selectGame(0)} className={styles.selectButton + (gameSelected === 0? ' ' + styles.selected: '')}>Game 1</button>
+          <br/>
+          <button onClick={()=>selectGame(1)} className={styles.selectButton + (gameSelected === 1? ' ' + styles.selected: '')}>Game 2</button>
+          <br/>
+          <button onClick={()=>selectGame(2)} className={styles.selectButton + (gameSelected === 2? ' ' + styles.selected: '')}>Game 3</button>
+        </div>
+      ),
+      [gameStatus.selected]: (
+        <div className={styles.joinButton}>Game {gameSelected + 1}</div>
       ),
       [gameStatus.ready]: (
         <div className={styles.joinButton}>Ready</div>

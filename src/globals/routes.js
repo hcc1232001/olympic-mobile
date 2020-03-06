@@ -1,5 +1,7 @@
 const routes = {
-  home: '/home',
+  home: '/game/:roomId?',
+  landing: '/landing',
+  debug: '/debug/:roomId?',
   mobileHome: '/mobileHome/:playerId?',
 };
 

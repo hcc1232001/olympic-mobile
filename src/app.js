@@ -9,11 +9,15 @@ const getRenderPropForRoute = (pageId) => {
   
 }
 const App = () => {
-  return <HashRouter>
-    <Route path={routes.home} render={getRenderPropForRoute('home')} />
-    <Route path={routes.mobileHome} render={getRenderPropForRoute('mobileHome')} />
-    {/* <Redirect to={routes.mobileHome} /> */}
-  </HashRouter>;
+  return <BrowserRouter>
+    <Switch>
+      <Route path={routes.home} render={getRenderPropForRoute('home')} />
+      <Route path={routes.mobileHome} render={getRenderPropForRoute('mobileHome')} />
+      <Route path={routes.landing} render={getRenderPropForRoute('landing')} />
+      <Route path={routes.debug} render={getRenderPropForRoute('debug')} />
+      <Redirect to={routes.landing} />
+    </Switch>
+  </BrowserRouter>;
 }
 
 export default App;
