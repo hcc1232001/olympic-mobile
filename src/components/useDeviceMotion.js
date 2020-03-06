@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 
 const useDeviceMotion = () => {
-  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [permissionGranted, setPermissionGranted] = useState(true);
   // const [direction, setDirection] = useState(0);
   // const [speed, setSpeed] = useState(0);
   // const [angle, setAngle] = useState(0);
@@ -18,15 +18,18 @@ const useDeviceMotion = () => {
   }, [permissionGranted]);
 
   let lastAccVec3 = [null, null, null];
-  const threshold = 45;
+  // let lastAccDir = 0;
+  const threshold = 0.5;
   const updateDeviceStatus = (event) => {
     const {x, y, z} = event.acceleration;
-    // const timeDelta = event.interval;
+    const timeDelta = event.interval;
+    // alert(`${x}, ${y}, ${z}`);
     
     let deltaX = Math.abs(x - lastAccVec3[0]);
     let deltaY = Math.abs(y - lastAccVec3[1]);
     let deltaZ = Math.abs(z - lastAccVec3[2]);
-    if(deltaY > threshold) {
+    // let currentAccDir = Math.sign(y - lastAccVec3[1]);
+    if(deltaY / timeDelta > threshold) {
       setMoveCounter((prevMoveCounter) => {
         return prevMoveCounter + 1;
       })
@@ -37,6 +40,7 @@ const useDeviceMotion = () => {
     }
     // setLastAccVec3([alpha, beta, gamma]);
     lastAccVec3 = [x, y, z];
+    // lastAccDir = currentAccDir;
   }
   
   return [{
