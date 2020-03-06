@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 
 const useDeviceMotion = () => {
-  const [permissionGranted, setPermissionGranted] = useState(true);
+  const [permissionGranted, setPermissionGranted] = useState(false);
   // const [direction, setDirection] = useState(0);
   // const [speed, setSpeed] = useState(0);
   // const [angle, setAngle] = useState(0);
