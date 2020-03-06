@@ -44,7 +44,7 @@ class Room {
     this.shakeArray = [];
     this.gameChoices = [];
     this.stageTimer = null;
-    this.distanceMultiplier = 3;
+    this.distanceMultiplier = 1;
     this.roomManager.addRoom(this.roomId, this);
     // this.roomManager.addHost();
     this.initialRoom();
