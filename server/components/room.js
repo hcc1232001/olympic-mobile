@@ -41,6 +41,7 @@ class Room {
     this.gameId = 1;
     this.players = [];
     this.hosts = [];
+    this.debugs = [];
     this.shakeArray = [];
     this.gameChoices = [];
     this.stageTimer = null;
@@ -65,11 +66,14 @@ class Room {
   updateGameStage(newStage) {
     if (newStage === this.roomStatus) {
       this.emit('playersInfo', this.playersStatus);
-      this.emit('gameStage', this.roomStatus);
+      this.emit('gameStage', this.roomStatus, {
+        playersInfo: this.playersStatus
+      });
       return;
     }
     const prevStage = this.roomStatus;
     this.roomStatus = newStage;
+    const additionalParams = [];
     switch (newStage) {
       case gameStatus['idle']:
         log(`game idle`);
@@ -78,11 +82,17 @@ class Room {
           this.generateAllPlayersId();
           this.gameChoices = new Array(this.playersCount).fill(0);
         }
+        additionalParams.push({
+          playersInfo: this.playersStatus
+        });
         this.emit('playersInfo', this.playersStatus);
         break;
       case gameStatus['waiting']:
         log(`game waiting`);
         this.clearAllTimeout();
+        additionalParams.push({
+          playersInfo: this.playersStatus
+        });
         this.emit('playersInfo', this.playersStatus);
         if (stageTimer[newStage] > 0) {
           this.stageTimer = setTimeout(() => {
@@ -112,6 +122,9 @@ class Room {
         });
         const finalGameIdx = Math.floor(Math.random() * gameIdxToRand.length);
         this.gameId = gameIdxToRand[finalGameIdx];
+        additionalParams.push({
+          gameSelected: this.gameId
+        });
         this.emit('gameSelected', this.gameId);
         if (stageTimer[newStage] > 0) {
           this.stageTimer = setTimeout(() => {
@@ -144,7 +157,11 @@ class Room {
           if (player['joined']) {
             player['socket'].emit('gameResult', this.shakeArray[idx] * this.distanceMultiplier);
           }
-        })
+        });
+        const distanceShaked = this.shakeArray.reduce((prev, curr) => prev + curr, 0) * this.distanceMultiplier;
+        this.hosts.forEach((hostSocket) => {
+          hostSocket.emit('gameResult', distanceShaked);
+        });
         this.clearAllTimeout();
         if (stageTimer[newStage] > 0) {
           this.stageTimer = setTimeout(() => {
@@ -157,7 +174,7 @@ class Room {
       case gameStatus['offline']:
         break;
     }
-    setImmediate(() => this.emit('gameStage', this.roomStatus));
+    setImmediate(() => this.emit('gameStage', this.roomStatus, ...additionalParams));
   }
   clearAllTimeout() {
     clearTimeout(this.stageTimer);
@@ -199,7 +216,7 @@ class Room {
     const connectedPlayersCount = this.players.reduce((prev, curr) => {
       return prev + ~~curr['joined'];
     }, 0);
-    if (connectedPlayersCount === 0) {
+    if (connectedPlayersCount === 0 && this.roomStatus === gameStatus.waiting) {
       this.updateGameStage(gameStatus.idle);
     }
   }
@@ -225,10 +242,13 @@ class Room {
       ack(this.roomId);
     }
     hostSocket.emit('playersInfo', this.playersStatus);
-    hostSocket.emit('gameStage', this.roomStatus);
+    hostSocket.emit('gameStage', this.roomStatus, {
+      playersInfo: this.playersStatus
+    });
   }
 
   addDebug(debugSocket, ack) {
+    this.debugs.push(debugSocket);
     debugSocket.join(this.roomId);
     log(`debug join - ${this.roomId}`);
     this.bindSocketEventForDebug(debugSocket);
@@ -236,7 +256,9 @@ class Room {
       ack(this.roomId);
     }
     debugSocket.emit('playersInfo', this.playersStatus);
-    debugSocket.emit('gameStage', this.roomStatus);
+    debugSocket.emit('gameStage', this.roomStatus, {
+      playersInfo: this.playersStatus
+    });
   }
 
   addPlayer(playerId, playerSocket, ack) {
@@ -348,6 +370,12 @@ class Room {
         this.updateGameStage(newStage);
       }
     });
+    socket.on('disconnect', () => {
+      const hostIdx = this.hosts.findIndex(hostSocket => hostSocket === socket);
+      if (hostIdx !== -1) {
+        this.hosts.splice(hostIdx, 1);
+      }
+    });
   }
 
   bindSocketEventForPlayer(playerIdx) {
@@ -423,8 +451,24 @@ class Room {
           }
           break;
         }
+        case 'setDistanceMultiplier': {
+          const newDistanceMultiplier = parseInt(data['data']);
+          if (!isNaN(newDistanceMultiplier)) {
+            this.distanceMultiplier = newDistanceMultiplier;
+          }
+          this.debugs.forEach(debugSocket => {
+            debugSocket.emit('updateDistanceMultiplier', this.distanceMultiplier);
+          })
+          break;
+        }
       }
     })
+    socket.on('disconnect', () => {
+      const debugIdx = this.debugs.findIndex(debugSocket => debugSocket === socket);
+      if (debugIdx !== -1) {
+        this.debugs.splice(debugIdx, 1);
+      }
+    });
   }
   // unbindSocketEventForPlayer(playerIdx) {
   //   const socket = this.players[playerIdx]['socket'];

@@ -40,6 +40,16 @@ const gameStatusText = {
   [gameStatus.result]:    'result',
   [gameStatus.offline]:   'offline',
 };
+
+const distanceMultipliersOptions = [
+  1,
+  2,
+  5,
+  10,
+  20,
+  50,
+  100
+];
 const cactusPos = [
   446, 2, 34, 70
 ];
@@ -62,12 +72,13 @@ const cactusPos = [
 const DebugPanel = () => {
   const [gameStage, setGameStage] = useState(gameStatus.offline);
   // const cachedCanvas = CachedCanvas();
+  const [joinGamePaths, setJoinGamePaths] = useState([]);
   const [qrcodeArray, setQrcodeArray] = useState([]);
   const [playersInfo, setPlayersInfo] = useState([]);
   const [scoreArray, setScoreArray] = useState([0, 0, 0, 0, 0]);
   const [choicesArray, setChoicesArray] = useState([0, 0, 0, 0, 0]);
   const [gameSelected, setGameSelected] = useState(0);
-
+  const [distanceMultiplier, setDistanceMultiplier] = useState(1);
   const {roomId} = useParams();
 
   // const roomName 
@@ -120,6 +131,11 @@ const DebugPanel = () => {
               if (playerInfo['joined'] === false) {
                 const joinGamePath = window.location.origin + generatePath(routes.mobileHome, {playerId: playerInfo['playerId']});
                 // 1234
+                setJoinGamePaths((prevJoinGamePaths) => {
+                  const newJoinGamePaths = [...prevJoinGamePaths];
+                  newJoinGamePaths[idx] = joinGamePath;
+                  return newJoinGamePaths;
+                });
                 QRCode.toDataURL(
                   joinGamePath,
                   {
@@ -166,6 +182,12 @@ const DebugPanel = () => {
             })
             setScoreArray([...tempScoreArray]);
           }
+        },
+        {
+          listener: 'updateDistanceMultiplier',
+          callback: (newDistanceMultiplier) => {
+            setDistanceMultiplier(newDistanceMultiplier);
+          }
         }
       ]
     });
@@ -176,6 +198,14 @@ const DebugPanel = () => {
     socket.emit('debug', {
       type: 'gameStage',
       data: newStage
+    });
+  }
+  const changeDistanceMultiplier = (event) => {
+    const newDistanceMultiplier = event.target.value;
+    setDistanceMultiplier(newDistanceMultiplier);
+    socket.emit('debug', {
+      type: 'setDistanceMultiplier',
+      data: newDistanceMultiplier
     });
   }
   const joinGame = (playerIdx) => {
@@ -216,11 +246,19 @@ const DebugPanel = () => {
   }
   return <div className={styles.debugPanel}>
   <div className={styles.header}>Debug Panel - Room &nbsp;<span className={styles.roomId} title={`Room Id: ${roomId}`}>{roomId}</span></div>
-    <div className={styles.row}>
+  <div className={styles.row}>
       Game Stage: &nbsp;
       <select value={gameStage} onChange={changeGameStatus}>
         {Object.keys(gameStatusText).map(status => {
           return <option key={status} value={status}>{gameStatusText[status]}</option>
+        })}
+      </select>
+    </div>
+    <div className={styles.row}>
+      Distance Multiplier: &nbsp;
+      <select value={distanceMultiplier} onChange={changeDistanceMultiplier}>
+        {distanceMultipliersOptions.map(distanceMultiplierOptions => {
+          return <option key={distanceMultiplierOptions} value={distanceMultiplierOptions}>{distanceMultiplierOptions}</option>
         })}
       </select>
     </div>
@@ -229,10 +267,13 @@ const DebugPanel = () => {
         <div className={styles.row}>
           {qrcodeArray.map((url, idx) => {
             if (url !== null) {
-              return <div key={idx} className={styles.qrblock} onClick={() => joinGame(idx)}>
+              return <a key={idx} href={joinGamePaths[idx]} className={styles.qrblock} onClick={(e) => {
+                e.preventDefault();
+                joinGame(idx);
+              }}>
                 <img src={url}  />
                 <div>Use this</div>
-              </div>;
+              </a>;
             } else {
               return <div key={idx} className={styles.qrblock} onClick={() => kickPlayer(idx)}>
                 <div className={styles.qrplaceholder} style={{
@@ -250,10 +291,13 @@ const DebugPanel = () => {
         <div className={styles.row}>
           {qrcodeArray.map((url, idx) => {
             if (url !== null) {
-              return <div key={idx} className={styles.qrblock} onClick={() => joinGame(idx)}>
+              return <a key={idx} href={joinGamePaths[idx]} className={styles.qrblock} onClick={(e) => {
+                e.preventDefault();
+                joinGame(idx);
+              }}>
                 <img src={url}  />
                 <div>Use this</div>
-              </div>;
+              </a>;
             } else {
               return <div key={idx} className={styles.qrblock} onClick={() => kickPlayer(idx)}>
                 <div className={styles.qrplaceholder} style={{

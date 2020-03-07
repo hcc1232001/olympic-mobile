@@ -313,8 +313,18 @@ const GameCanvas = () => {
         drawFloor(0);
         if (backgroundTimer.current / fps < 2) {
           drawTrex(~~((backgroundTimer.current / fps) % 10 / 9));
+          ctx.current.save();
+          ctx.current.font = '30px PressStart';
+          ctx.current.textAlign = "center";
+          ctx.current.fillText(`Get`, canvas.current.width / 2, canvas.current.height / 2 + 30);
+          ctx.current.restore();
         } else {
           drawTrex(6);
+          ctx.current.save();
+          ctx.current.font = '30px PressStart';
+          ctx.current.textAlign = "center";
+          ctx.current.fillText(`Set`, canvas.current.width / 2, canvas.current.height / 2 + 30);
+          ctx.current.restore();
         }
         drawCactus();
         drawScore(0);
@@ -324,6 +334,13 @@ const GameCanvas = () => {
         backgroundTimer.current += 0.5 + shakeCounter.current;
         if (shakeCounter.current > 0) {
           addShakeCounter(-Math.max(0.1, shakeCounter.current * 0.01));
+        }
+        if (backgroundTimer.current / fps < 1) {
+          ctx.current.save();
+          ctx.current.font = `${30 + 20 * backgroundTimer.current / fps}px PressStart`;
+          ctx.current.textAlign = "center";
+          ctx.current.fillText(`Go`, canvas.current.width / 2, canvas.current.height / 2 + 30);
+          ctx.current.restore();
         }
         // shakeCounter += 30;
         drawFloor((backgroundTimer.current) / fps * floorMultiplier);
@@ -440,6 +457,12 @@ const GameCanvas = () => {
           listener: 'playersShake',
           callback: (shakeArray) => {
             addScore(shakeArray);
+          }
+        },
+        {
+          listener: 'gameResult',
+          callback: (finalScore) => {
+            score.current = finalScore;
           }
         }
       ]
