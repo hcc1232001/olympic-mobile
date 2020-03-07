@@ -376,6 +376,9 @@ class Room {
       if (hostIdx !== -1) {
         this.hosts.splice(hostIdx, 1);
       }
+      if (this.hosts.length + this.debugs.length === 0) {
+        this.roomManager.removeRoom(this.roomId);
+      }
     });
   }
 
@@ -468,6 +471,9 @@ class Room {
       const debugIdx = this.debugs.findIndex(debugSocket => debugSocket === socket);
       if (debugIdx !== -1) {
         this.debugs.splice(debugIdx, 1);
+      }
+      if (this.hosts.length + this.debugs.length === 0) {
+        this.roomManager.removeRoom(this.roomId);
       }
     });
   }
