@@ -259,6 +259,7 @@ class Room {
     debugSocket.emit('gameStage', this.roomStatus, {
       playersInfo: this.playersStatus
     });
+    debugSocket.emit('updateDistanceMultiplier', this.distanceMultiplier);
   }
 
   addPlayer(playerId, playerSocket, ack) {

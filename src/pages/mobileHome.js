@@ -25,6 +25,7 @@ const MobileHomePage = () => {
   const [gameStage, setGameStage] = useState(gameStatus['idle']);
   const [gameSelected, setGameSelected] = useState(0);
   const [score, setScore] = useState(0);
+  const [alertText, setAlertText] = useState('');
   const [isJoined, setIsJoined] = useState(false);
   const playerId = useParams('playerId');
   const socket = useRef(null);
@@ -67,8 +68,9 @@ const MobileHomePage = () => {
             data: playerId,
             ack: (result) => {
               // alert(result);
-              if (result === "failed, scan again") {
-                alert("Room not found, please Scan the QRcode again.")
+              if (result !== "joined") {
+                setGameStage(gameStatus.offline);
+                setAlertText(result);
               }
             }
           }
@@ -80,6 +82,8 @@ const MobileHomePage = () => {
               setGameStage(stageId);
               if (stageId === gameStatus.selecting) {
                 setGameSelected(0);
+              } else if (stageId === gameStatus.result) {
+                socket.current.disconnect();
               }
             }
           },
@@ -164,9 +168,14 @@ const MobileHomePage = () => {
       [gameStatus.result]: (
         <div className={styles.joinButton}>
           Result
-          <div><b>{score}</b></div>
+          <div>{score}</div>
         </div>
       ),
+      [gameStatus.offline]: (
+        <div className={styles.joinButton}>
+          <div>{alertText}</div>
+        </div>
+      )
     }[gameStage]}
   </div>;
 }
