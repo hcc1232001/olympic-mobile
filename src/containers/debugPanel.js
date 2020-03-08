@@ -207,6 +207,12 @@ const DebugPanel = () => {
               setRoomList(newRoomList);
             }
           }
+        },
+        {
+          listener: 'gameResult',
+          callback: (result) => {
+            console.log('gameResult', result);
+          }
         }
       ]
     });

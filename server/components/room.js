@@ -162,6 +162,12 @@ class Room {
         this.hosts.forEach((hostSocket) => {
           hostSocket.emit('gameResult', distanceShaked);
         });
+        this.debugs.forEach((debugSocket) => {
+          debugSocket.emit('gameResult', distanceShaked);
+        });
+        additionalParams.push({
+          gameResult: distanceShaked
+        });
         this.clearAllTimeout();
         if (stageTimer[newStage] > 0) {
           this.stageTimer = setTimeout(() => {
