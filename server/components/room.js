@@ -51,8 +51,8 @@ class Room {
     this.initialRoom();
   }
 
-  emit(eventName, data) {
-    this.socketio.to(this.roomId).emit(eventName, data);
+  emit(eventName, data, ...additionalParams) {
+    this.socketio.to(this.roomId).emit(eventName, data, ...additionalParams);
   }
 
   // initDb() {
