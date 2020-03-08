@@ -5,6 +5,7 @@ class RoomManager {
   constructor(socketio) {
     this.roomsList = {};
     this.hostsList = {};
+    this.debugList = {};
     this.playersList = {};
     this.socketio = socketio;
     this.initSocketEvents();
@@ -20,6 +21,7 @@ class RoomManager {
           log(`createRoom - ${options.roomId}`);
           const newRoom = this.createRoom(options.roomId);
           newRoom.addHost(socket, ack);
+          this.socketio.in('__debug').emit('roomList', Object.keys(this.roomsList));
         } else {
           this.roomsList[options.roomId].addHost(socket, ack);
         }
@@ -36,8 +38,6 @@ class RoomManager {
       });
 
       socket.on('debugRoom', (options, ack) => {
-        log('debugRoom');
-        log(options);
         if (options.roomId === undefined || this.roomsList[options.roomId] === undefined) {
           if (typeof(ack) === "function") {
             ack(Object.keys(this.roomsList));
@@ -45,6 +45,7 @@ class RoomManager {
         } else {
           this.roomsList[options.roomId].addDebug(socket, ack);
         }
+        socket.join('__debug');
       })
     })
   }
