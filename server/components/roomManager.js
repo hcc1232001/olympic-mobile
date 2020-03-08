@@ -17,13 +17,13 @@ class RoomManager {
       log('----- Client Connected -----');
       // createRoom for host use
       socket.on('createRoom', (options, ack) => {
-        const newRoomId = `00000000${options.roomId}`.substr(-8);
-        if (newRoomId === undefined || this.roomsList[newRoomId] === undefined) {
-          log(`createRoom - ${newRoomId}`);
-          const newRoom = this.createRoom(newRoomId);
+        // const newRoomId = (options.roomId === undefined? undefined: `00000000${options.roomId}`.substr(-8));
+        if (options.roomId === undefined || this.roomsList[options.roomId] === undefined) {
+          log(`createRoom - ${options.roomId}`);
+          const newRoom = this.createRoom(options.roomId);
           newRoom.addHost(socket, ack);
         } else {
-          this.roomsList[newRoomId].addHost(socket, ack);
+          this.roomsList[options.roomId].addHost(socket, ack);
         }
       });
       socket.on('joinRoom', (options, ack) => {

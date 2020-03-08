@@ -37,7 +37,7 @@ class Room {
     this.socketio = roomManager.socketio;
     this.playersCount = playersCount;
     this.hostCount = hostCount;
-    this.roomId = roomId || uuid().split('-')[0];
+    this.roomId = (roomId? `00000000${roomId}`.substr(-8): uuid().split('-')[0]);
     this.gameId = 1;
     this.players = [];
     this.hosts = [];

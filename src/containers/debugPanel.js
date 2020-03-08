@@ -199,7 +199,7 @@ const DebugPanel = () => {
           }
         },
         {
-          listenre: 'roomList',
+          listener: 'roomList',
           callback: (newRoomList) => {
             console.log('roomList', newRoomList);
             if (Array.isArray(newRoomList)) {
