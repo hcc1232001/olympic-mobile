@@ -17,13 +17,13 @@ class RoomManager {
       log('----- Client Connected -----');
       // createRoom for host use
       socket.on('createRoom', (options, ack) => {
-        if (options.roomId === undefined || this.roomsList[options.roomId] === undefined) {
-          log(`createRoom - ${options.roomId}`);
-          const newRoom = this.createRoom(options.roomId);
+        const newRoomId = `00000000${options.roomId}`.substr(-8);
+        if (newRoomId === undefined || this.roomsList[newRoomId] === undefined) {
+          log(`createRoom - ${newRoomId}`);
+          const newRoom = this.createRoom(newRoomId);
           newRoom.addHost(socket, ack);
-          this.socketio.in('__debug').emit('roomList', Object.keys(this.roomsList));
         } else {
-          this.roomsList[options.roomId].addHost(socket, ack);
+          this.roomsList[newRoomId].addHost(socket, ack);
         }
       });
       socket.on('joinRoom', (options, ack) => {
@@ -38,6 +38,7 @@ class RoomManager {
       });
 
       socket.on('debugRoom', (options, ack) => {
+        socket.join('roomDebug');
         if (options.roomId === undefined || this.roomsList[options.roomId] === undefined) {
           if (typeof(ack) === "function") {
             ack(Object.keys(this.roomsList));
@@ -45,7 +46,6 @@ class RoomManager {
         } else {
           this.roomsList[options.roomId].addDebug(socket, ack);
         }
-        socket.join('__debug');
       })
     })
   }
@@ -61,6 +61,7 @@ class RoomManager {
 
   addRoom(roomId, room) {
     this.roomsList[roomId] = room;
+    this.socketio.in('roomDebug').emit('roomList', Object.keys(this.roomsList));
   }
 
   addPlayer(playerId, room) {
@@ -70,6 +71,7 @@ class RoomManager {
   // call from Room
   removeRoom(roomId) {
     delete this.roomsList[roomId];
+    this.socketio.in('roomDebug').emit('roomList', Object.keys(this.roomsList));
   }
   // call from Room
   removePlayer(playerId) {

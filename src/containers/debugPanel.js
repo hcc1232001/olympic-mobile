@@ -114,7 +114,8 @@ const DebugPanel = () => {
         // },
         {
           listener: 'gameStage',
-          callback: (stageId) => {
+          callback: (stageId, additionalParams) => {
+            console.log('gameStage', stageId, additionalParams);
             setGameStage(stageId);
             if (stageId === gameStatus.started) {
               for (let i = 0; i < tempScoreArray.length; i++) {
@@ -129,6 +130,7 @@ const DebugPanel = () => {
         {
           listener: 'playersInfo',
           callback: (playersInfo) => {
+            console.log('playersInfo', playersInfo);
             setPlayersInfo(playersInfo);
             const tempQrcodeArray = [];
             playersInfo.forEach((playerInfo, idx) => {
@@ -163,6 +165,7 @@ const DebugPanel = () => {
         {
           listener: 'gameChoices',
           callback: (choicesArray) => {
+            console.log('gameChoices', choicesArray);
             setChoicesArray(choicesArray);
           }
         },
@@ -176,6 +179,7 @@ const DebugPanel = () => {
         {
           listener: 'playersShake',
           callback: (shakeArray) => {
+            console.log('playersShake', shakeArray);
             // const tempScoreArray = [...scoreArray];
             shakeArray.forEach((score, idx) => {
               // if (tempScoreArray[idx] === undefined) {
@@ -190,12 +194,14 @@ const DebugPanel = () => {
         {
           listener: 'updateDistanceMultiplier',
           callback: (newDistanceMultiplier) => {
+            console.log('updateDistanceMultiplier', newDistanceMultiplier);
             setDistanceMultiplier(newDistanceMultiplier);
           }
         },
         {
           listenre: 'roomList',
           callback: (newRoomList) => {
+            console.log('roomList', newRoomList);
             if (Array.isArray(newRoomList)) {
               setRoomList(newRoomList);
             }
@@ -387,7 +393,7 @@ const DebugPanel = () => {
           roomList.length > 0 ?
             <div className={styles.roomItemWrap}>
               {roomList.map((roomId) => {
-                return <Link to={generatePath(routes.debug, { roomId: roomId})} className={styles.roomItem}>{roomId}</Link>
+                return <Link key={roomId} to={generatePath(routes.debug, { roomId: roomId})} className={styles.roomItem}>{roomId}</Link>
               })}
             </div>
           :
