@@ -1,12 +1,42 @@
 .gameCanvasWrapper {
-  width: 800px;
-  height: 400px;
+  width: 810px;
+  height: 460px;
   margin: 0 auto;
   padding: 4px;
   border: 1px solid #535353;
+  position: relative;
 }
 .gameCanvas {
-  width: 790px;
-  height: 390px;
+  width: 800px;
+  height: 450px;
   margin: 0 auto;
+  background-color: #FFFFFF;
+}
+.fullscreenIcon {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  border: 3px solid #535353;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+.fullscreenIcon:before,
+.fullscreenIcon:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: #FFF;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.fullscreenIcon:before {
+  width: 16px;
+  height: 3px;
+}
+.fullscreenIcon:after {
+  width: 3px;
+  height: 16px;
 }

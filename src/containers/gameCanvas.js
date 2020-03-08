@@ -129,32 +129,48 @@ const GameCanvas = () => {
   let roomName = useRef(roomId);
   let gameSelected = useRef(0);
   const drawTrex = (status) => {
-    ctx.current.drawImage(cachedCanvas, ...TrexPos[status], 88, 196, 88, 94);
+    ctx.current.drawImage(cachedCanvas, ...TrexPos[status], 93, 216, 88, 94);
     // console.log(TrexPos[0]);
   };
   const drawTimer = (total) => {
     const now = Date.now();
     const delta = (now - timeStarted.current) / 1000;
     const timeRemain = Math.max(total - ~~delta, 0);
-    const timeRemainArray = timeRemain.toString().padStart(3, '0').split('');
-    timeRemainArray.forEach((num, idx) => {
-      ctx.current.drawImage(cachedCanvas, ...numPos[num], 11 + 22 * idx, 11, numPos[num][2], numPos[num][3]);
-    })
+    const timeRemainString = timeRemain.toString().padStart(3, '0');
+
+    ctx.current.save();
+    ctx.current.font = '24px PressStart';
+    ctx.current.fillStyle = '#535353';
+    ctx.current.fillText(timeRemainString, 11, 35);
+    ctx.current.restore();
+
+    // const timeRemainArray = timeRemainString.split('');
+    // timeRemainArray.forEach((num, idx) => {
+    //   ctx.current.drawImage(cachedCanvas, ...numPos[num], 11 + 22 * idx, 11, numPos[num][2], numPos[num][3]);
+    // })
   };
   const drawFloor = (status) => {
     const targetX = (status) % floorPos[2];
-    ctx.current.drawImage(cachedCanvas, targetX, floorPos[1], canvas.current.width, floorPos[3], 0, 264, canvas.current.width, floorPos[3]);
+    ctx.current.drawImage(cachedCanvas, targetX, floorPos[1], canvas.current.width, floorPos[3], 0, 294, canvas.current.width, floorPos[3]);
     const remainX = targetX - floorPos[2] + canvas.current.width;
     if (remainX > 0) {
-      ctx.current.drawImage(cachedCanvas, floorPos[0], floorPos[1], remainX, floorPos[3], canvas.current.width - remainX, 264, remainX, floorPos[3]);
+      ctx.current.drawImage(cachedCanvas, floorPos[0], floorPos[1], remainX, floorPos[3], canvas.current.width - remainX, 294, remainX, floorPos[3]);
     }
     // console.log(TrexPos[0]);
   };
   const drawScore = (score) => {
-    const scoreArray = score.toString().padStart(5, '0').split('');
-    scoreArray.forEach((num, idx) => {
-      ctx.current.drawImage(cachedCanvas, ...numPos[num], canvas.current.width - 22 * (scoreArray.length - idx + 0.5), 11, numPos[num][2], numPos[num][3]);
-    })
+    const scoreString = score.toString().padStart(5, '0');
+    ctx.current.save();
+    ctx.current.font = '24px PressStart';
+    ctx.current.textAlign = "right";
+    ctx.current.fillStyle = '#535353';
+    ctx.current.fillText(scoreString, canvas.current.width - 11, 35);
+    ctx.current.restore();
+
+    // const scoreArray = scoreString.split('');
+    // scoreArray.forEach((num, idx) => {
+    //   ctx.current.drawImage(cachedCanvas, ...numPos[num], canvas.current.width - 22 * (scoreArray.length - idx + 0.5), 11, numPos[num][2], numPos[num][3]);
+    // })
   };
   const drawCloud = (status) => {
     cloudArray.forEach((cloudOffset, idx) => {
@@ -188,43 +204,45 @@ const GameCanvas = () => {
       }
       if (cactus > 0) {
         const needAnimate = timeDelta >= Math.min(500 / cactus, 200);
-        ctx.current.drawImage(cachedCanvas, ...cactusPos, 218 + (80 * idx), 320 - (cactus % 2) * 15, cactusPos[2], cactusPos[3]);
+        ctx.current.drawImage(cachedCanvas, ...cactusPos, 223 + (80 * idx), 350 - (cactus % 2) * 15, cactusPos[2], cactusPos[3]);
         if (needAnimate) {
           cactusArray.current[idx] -= 1;
           prevTime[idx] = now;
         }
       } else {
-        ctx.current.drawImage(cachedCanvas, ...cactusPos, 218 + (80 * idx), 320, cactusPos[2], cactusPos[3]);
+        ctx.current.drawImage(cachedCanvas, ...cactusPos, 223 + (80 * idx), 350, cactusPos[2], cactusPos[3]);
       }
       ctx.current.fillStyle = playerColor[idx];
-      ctx.current.fillRect(218 + (80 * idx), 380, cactusPos[2], 10);
+      ctx.current.fillRect(223 + (80 * idx), 410, cactusPos[2], 10);
       ctx.current.restore();
     })
   };
 
   const drawQRCode = () => {
     qrcodeArray.current.forEach((qrcode, idx) => {
-      ctx.current.drawImage(qrcode, 85 + 120 * idx, (idx % 2 === 0 ? 30: 210));
+      ctx.current.drawImage(qrcode, 90 + 120 * idx, (idx % 2 === 0 ? 60: 240));
     });
   };
   
   const drawLanding = () => {
     const qrcode = qrcodeArray.current[2];
-    ctx.current.drawImage(qrcode, 320, 180);
+    ctx.current.drawImage(qrcode, 325, 210);
     ctx.current.save();
     ctx.current.font = '30px PressStart';
     ctx.current.textAlign = "center";
+    ctx.current.fillStyle = '#535353';
     // ctx.current.fillStyle = '#FF0000';
     // ctx.current.fillText('Shake Shake Game', canvas.current.width / 2 - 5 + Math.random() * 10, 110 - 5 + Math.random() * 10);
     // ctx.current.fillStyle = '#0000FF';
     // ctx.current.fillText('Shake Shake Game', canvas.current.width / 2 - 5 + Math.random() * 10, 110 - 5 + Math.random() * 10);
     // ctx.current.fillStyle = '#000000';
-    ctx.current.fillText('Shake Shake Game', canvas.current.width / 2, 110);
+    ctx.current.fillText('Shake Shake Game', canvas.current.width / 2, 140);
     ctx.current.restore();
   }
   const drawSelecting = () => {
     ctx.current.save();
     ctx.current.font = '30px PressStart';
+    ctx.current.fillStyle = '#535353';
     ctx.current.textAlign = "center";
     ctx.current.fillText('Select Game', canvas.current.width / 2, canvas.current.height / 2 - 15);
     ctx.current.fillText('on Your Device', canvas.current.width / 2, canvas.current.height / 2 + 45);
@@ -234,6 +252,7 @@ const GameCanvas = () => {
   const drawSelected = () => {
     ctx.current.save();
     ctx.current.font = '30px PressStart';
+    ctx.current.fillStyle = '#535353';
     ctx.current.textAlign = "center";
     ctx.current.fillText(`Game ${gameSelected.current + 1}`, canvas.current.width / 2, canvas.current.height / 2 + 30);
     ctx.current.restore();
@@ -242,19 +261,17 @@ const GameCanvas = () => {
   const drawResult = (score) => {
     ctx.current.save();
     ctx.current.font = '30px PressStart';
+    ctx.current.fillStyle = '#535353';
     ctx.current.textAlign = "center";
     ctx.current.fillText('Score', canvas.current.width / 2, canvas.current.height / 2 - 15);
     ctx.current.fillText(score.toString().padStart(5, '0'), canvas.current.width / 2, canvas.current.height / 2 + 45);
     ctx.current.restore();
-    // const scoreArray = score.toString().padStart(5, '0').split('');
-    // scoreArray.forEach((num, idx) => {
-    //   ctx.current.drawImage(cachedCanvas, ...numPos[num], (canvas.current.width - 22 * scoreArray.length) / 2 + 22 * idx, (390 - numPos[num][3]) / 2, numPos[num][2], numPos[num][3]);
-    // })
   };
 
   const drawRoomName = () => {
     ctx.current.save();
     ctx.current.font = '12px PressStart';
+    ctx.current.fillStyle = '#535353';
     ctx.current.textAlign = "left";
     // ctx.current.fillText('Shake Shake Game', canvas.current.width / 2 - 5 + Math.random() * 10, 120 - 5 + Math.random() * 10);
     ctx.current.fillText(`ID:${roomName.current}`, 16, canvas.current.height - 8);
@@ -315,6 +332,7 @@ const GameCanvas = () => {
           drawTrex(~~((backgroundTimer.current / fps) % 10 / 9));
           ctx.current.save();
           ctx.current.font = '30px PressStart';
+          ctx.current.fillStyle = '#535353';
           ctx.current.textAlign = "center";
           ctx.current.fillText(`Get`, canvas.current.width / 2, canvas.current.height / 2 + 30);
           ctx.current.restore();
@@ -322,6 +340,7 @@ const GameCanvas = () => {
           drawTrex(6);
           ctx.current.save();
           ctx.current.font = '30px PressStart';
+          ctx.current.fillStyle = '#535353';
           ctx.current.textAlign = "center";
           ctx.current.fillText(`Set`, canvas.current.width / 2, canvas.current.height / 2 + 30);
           ctx.current.restore();
@@ -338,6 +357,7 @@ const GameCanvas = () => {
         if (backgroundTimer.current / fps < 1) {
           ctx.current.save();
           ctx.current.font = `${30 + 20 * backgroundTimer.current / fps}px PressStart`;
+          ctx.current.fillStyle = '#535353';
           ctx.current.textAlign = "center";
           ctx.current.fillText(`Go`, canvas.current.width / 2, canvas.current.height / 2 + 30);
           ctx.current.restore();
@@ -416,7 +436,7 @@ const GameCanvas = () => {
           callback: (playersInfo) => {
             qrcodeArray.current.length = 0;
             playersInfo.forEach((playerInfo, idx) => {
-              console.log(playerInfo);
+              // console.log(playerInfo);
               const dummyCanvas = document.createElement('canvas');
               dummyCanvas.width = 150;
               dummyCanvas.height = 150;
@@ -499,6 +519,9 @@ const GameCanvas = () => {
 
   return <div className={styles.gameCanvasWrapper}>
     <canvas className={styles.gameCanvas} ref={setGameCanvas} />
+    {gameStage === gameStatus.idle && 
+      <div className={styles.fullscreenIcon} title="Fullscreen" onClick={() => canvas.current.requestFullscreen() }/>
+    }
   </div>;
 }
 
