@@ -167,8 +167,11 @@ const MobileHomePage = () => {
       ),
       [gameStatus.result]: (
         <div className={styles.joinButton}>
-          Result
-          <div>{score}</div>
+          <div>Result</div>
+          <div className={styles.score}>{score}</div>
+          <a className={styles.shareToFb} href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}&quote=I played Shake Shake Game and got ${score} marks !`} target="_blank">
+            Share
+          </a>
         </div>
       ),
       [gameStatus.offline]: (
