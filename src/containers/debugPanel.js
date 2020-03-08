@@ -84,8 +84,9 @@ const DebugPanel = () => {
 
   // const roomName 
   const tempScoreArray = [0, 0, 0, 0, 0];
-  const socket = useMemo(() => {
-    return withSocketio({
+  const socket = useRef(null);
+  useEffect(() => {
+    socket.current = withSocketio({
       host: config.socketioHost,
       eventEmitters: [
         {
@@ -209,11 +210,16 @@ const DebugPanel = () => {
         }
       ]
     });
-  }, []);
+    return () => {
+      if (socket.current) {
+        socket.current.disconnect();
+      }
+    }
+  }, [roomId])
   const changeGameStatus = (event) => {
     const newStage = event.target.value;
     setGameStage(newStage);
-    socket.emit('debug', {
+    socket.current.emit('debug', {
       type: 'gameStage',
       data: newStage
     });
@@ -221,14 +227,14 @@ const DebugPanel = () => {
   const changeDistanceMultiplier = (event) => {
     const newDistanceMultiplier = event.target.value;
     setDistanceMultiplier(newDistanceMultiplier);
-    socket.emit('debug', {
+    socket.current.emit('debug', {
       type: 'setDistanceMultiplier',
       data: newDistanceMultiplier
     });
   }
   const joinGame = (playerIdx) => {
     const playerId = playersInfo[playerIdx]['playerId'];
-    socket.emit('debug', {
+    socket.current.emit('debug', {
       type: 'joinGame',
       data: {
         playerId: playerId
@@ -237,7 +243,7 @@ const DebugPanel = () => {
   }
   const kickPlayer = (playerIdx) => {
     const playerId = playersInfo[playerIdx]['playerId'];
-    socket.emit('debug', {
+    socket.current.emit('debug', {
       type: 'kickPlayer',
       data: {
         playerId: playerId
@@ -246,7 +252,7 @@ const DebugPanel = () => {
   }
   const doShake = (playerIdx) => {
     const playerId = playersInfo[playerIdx]['playerId'];
-    socket.emit('debug', {
+    socket.current.emit('debug', {
       type: 'shake',
       data: {
         playerId: playerId
@@ -255,7 +261,7 @@ const DebugPanel = () => {
   }
   const playerSelectGame = (playerIdx, gameIdx) => {
     choicesArray[playerIdx] = gameIdx;
-    socket.emit('debug', {
+    socket.current.emit('debug', {
       type: 'selectGame',
       data: {
         selectedArray: choicesArray
@@ -268,6 +274,7 @@ const DebugPanel = () => {
       {roomId !== undefined && 
         <>
           &nbsp;
+          <Link to={generatePath(routes.debug)} className={styles.backToList} />
           <span className={styles.roomId} title={`Room Id: ${roomId}`}>{roomId}</span>
         </>
       }
@@ -393,7 +400,7 @@ const DebugPanel = () => {
           roomList.length > 0 ?
             <div className={styles.roomItemWrap}>
               {roomList.map((roomId) => {
-                return <Link key={roomId} to={generatePath(routes.debug, { roomId: roomId})} className={styles.roomItem}>{roomId}</Link>
+                return <Link key={roomId} to={generatePath(routes.debug, { roomId: roomId })} className={styles.roomItem}>{roomId}</Link>
               })}
             </div>
           :
