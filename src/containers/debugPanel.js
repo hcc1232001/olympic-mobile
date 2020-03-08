@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import {useParams, generatePath} from 'react-router-dom';
+import {useParams, generatePath, Link} from 'react-router-dom';
 import QRCode from 'qrcode';
 
 import withSocketio from 'components/withSocketio';
@@ -73,6 +73,7 @@ const DebugPanel = () => {
   const [gameStage, setGameStage] = useState(gameStatus.offline);
   // const cachedCanvas = CachedCanvas();
   const [joinGamePaths, setJoinGamePaths] = useState([]);
+  const [roomList, setRoomList] = useState([]);
   const [qrcodeArray, setQrcodeArray] = useState([]);
   const [playersInfo, setPlayersInfo] = useState([]);
   const [scoreArray, setScoreArray] = useState([0, 0, 0, 0, 0]);
@@ -94,6 +95,9 @@ const DebugPanel = () => {
           },
           ack: (result) => {
             console.log(result);
+            if (Array.isArray(result)) {
+              setRoomList(result);
+            }
           }
         }
       ],
@@ -188,6 +192,14 @@ const DebugPanel = () => {
           callback: (newDistanceMultiplier) => {
             setDistanceMultiplier(newDistanceMultiplier);
           }
+        },
+        {
+          listenre: 'roomList',
+          callback: (newRoomList) => {
+            if (Array.isArray(newRoomList)) {
+              setRoomList(newRoomList);
+            }
+          }
         }
       ]
     });
@@ -244,121 +256,148 @@ const DebugPanel = () => {
       }
     });
   }
-  return <div className={styles.debugPanel}>
-  <div className={styles.header}>Debug Panel - Room &nbsp;<span className={styles.roomId} title={`Room Id: ${roomId}`}>{roomId}</span></div>
-  <div className={styles.row}>
-      Game Stage: &nbsp;
-      <select value={gameStage} onChange={changeGameStatus}>
-        {Object.keys(gameStatusText).map(status => {
-          return <option key={status} value={status}>{gameStatusText[status]}</option>
-        })}
-      </select>
+  return (
+  <div className={styles.debugPanel}>
+    <div className={styles.header}>Debug Panel - Room 
+      {roomId !== undefined && 
+        <>
+          &nbsp;
+          <span className={styles.roomId} title={`Room Id: ${roomId}`}>{roomId}</span>
+        </>
+      }
     </div>
-    <div className={styles.row}>
-      Distance Multiplier: &nbsp;
-      <select value={distanceMultiplier} onChange={changeDistanceMultiplier}>
-        {distanceMultipliersOptions.map(distanceMultiplierOptions => {
-          return <option key={distanceMultiplierOptions} value={distanceMultiplierOptions}>{distanceMultiplierOptions}</option>
-        })}
-      </select>
-    </div>
-    {{
-      [gameStatus.idle]: (
+    {roomId !== undefined ?
+      <>
         <div className={styles.row}>
-          {qrcodeArray.map((url, idx) => {
-            if (url !== null) {
-              return <a key={idx} href={joinGamePaths[idx]} className={styles.qrblock} onClick={(e) => {
-                e.preventDefault();
-                joinGame(idx);
-              }}>
-                <img src={url}  />
-                <div>Use this</div>
-              </a>;
-            } else {
-              return <div key={idx} className={styles.qrblock} onClick={() => kickPlayer(idx)}>
-                <div className={styles.qrplaceholder} style={{
-                  color: playerColor[idx]
-                }}>
-                  Joined
-                </div>
-                <div>Kick this</div>
-              </div>;
-            }
-          })}
+          Game Stage: &nbsp;
+          <select value={gameStage} onChange={changeGameStatus}>
+            {Object.keys(gameStatusText).map(status => {
+              return <option key={status} value={status}>{gameStatusText[status]}</option>
+            })}
+          </select>
         </div>
-      ),
-      [gameStatus.waiting]: (
         <div className={styles.row}>
-          {qrcodeArray.map((url, idx) => {
-            if (url !== null) {
-              return <a key={idx} href={joinGamePaths[idx]} className={styles.qrblock} onClick={(e) => {
-                e.preventDefault();
-                joinGame(idx);
-              }}>
-                <img src={url}  />
-                <div>Use this</div>
-              </a>;
-            } else {
-              return <div key={idx} className={styles.qrblock} onClick={() => kickPlayer(idx)}>
-                <div className={styles.qrplaceholder} style={{
-                  color: playerColor[idx]
-                }}>
-                  Joined
-                </div>
-                <div>Kick this</div>
-              </div>;
-            }
-          })}
+          Distance Multiplier: &nbsp;
+          <select value={distanceMultiplier} onChange={changeDistanceMultiplier}>
+            {distanceMultipliersOptions.map(distanceMultiplierOptions => {
+              return <option key={distanceMultiplierOptions} value={distanceMultiplierOptions}>{distanceMultiplierOptions}</option>
+            })}
+          </select>
         </div>
-      ),
-      [gameStatus.selecting]: (
-        <div className={styles.row}>
-          {playersInfo.map((playerInfo, idx) => {
-            if (playerInfo.joined) {
-              return <div key={idx} className={styles.playerJoined} onClick={() => doShake(idx)} style={{
-                color: playerColor[idx]
-              }}>
-                <button onClick={()=>playerSelectGame(idx, 0)} className={styles.gameSelectingBtn + (choicesArray[idx] === 0? ' ' + styles.gameSelected: '')}>Game 1</button>
-                <button onClick={()=>playerSelectGame(idx, 1)} className={styles.gameSelectingBtn + (choicesArray[idx] === 1? ' ' + styles.gameSelected: '')}>Game 2</button>
-                <button onClick={()=>playerSelectGame(idx, 2)} className={styles.gameSelectingBtn + (choicesArray[idx] === 2? ' ' + styles.gameSelected: '')}>Game 3</button>
-              </div>;
-            } else {
-              return <div key={idx} className={styles.playerNotJoined} style={{
-                color: playerColor[idx]
-              }}>
-                <div>Not Joined</div>
-              </div>;
-            }
-          })}
-        </div>
-      ),
-      [gameStatus.selected]: (
-        <div className={styles.row}>
-          Game {gameSelected + 1}
-        </div>
-      ),
-      [gameStatus.started]: (
-        <div className={styles.row}>
-          {playersInfo.map((playerInfo, idx) => {
-            if (playerInfo.joined) {
-              return <div key={idx} className={styles.playerJoined} onClick={() => doShake(idx)} style={{
-                color: playerColor[idx]
-              }}>
-                <div>Shake</div>
-                <div>{scoreArray[idx]}</div>
-              </div>;
-            } else {
-              return <div key={idx} className={styles.playerNotJoined} style={{
-                color: playerColor[idx]
-              }}>
-                <div>Not Joined</div>
-              </div>;
-            }
-          })}
-        </div>
-      ),
-    }[gameStage]}
-  </div>
+        {{
+          [gameStatus.idle]: (
+            <div className={styles.row}>
+              {qrcodeArray.map((url, idx) => {
+                if (url !== null) {
+                  return <a key={idx} href={joinGamePaths[idx]} className={styles.qrblock} onClick={(e) => {
+                    e.preventDefault();
+                    joinGame(idx);
+                  }}>
+                    <img src={url}  />
+                    <div>Use this</div>
+                  </a>;
+                } else {
+                  return <div key={idx} className={styles.qrblock} onClick={() => kickPlayer(idx)}>
+                    <div className={styles.qrplaceholder} style={{
+                      color: playerColor[idx]
+                    }}>
+                      Joined
+                    </div>
+                    <div>Kick this</div>
+                  </div>;
+                }
+              })}
+            </div>
+          ),
+          [gameStatus.waiting]: (
+            <div className={styles.row}>
+              {qrcodeArray.map((url, idx) => {
+                if (url !== null) {
+                  return <a key={idx} href={joinGamePaths[idx]} className={styles.qrblock} onClick={(e) => {
+                    e.preventDefault();
+                    joinGame(idx);
+                  }}>
+                    <img src={url}  />
+                    <div>Use this</div>
+                  </a>;
+                } else {
+                  return <div key={idx} className={styles.qrblock} onClick={() => kickPlayer(idx)}>
+                    <div className={styles.qrplaceholder} style={{
+                      color: playerColor[idx]
+                    }}>
+                      Joined
+                    </div>
+                    <div>Kick this</div>
+                  </div>;
+                }
+              })}
+            </div>
+          ),
+          [gameStatus.selecting]: (
+            <div className={styles.row}>
+              {playersInfo.map((playerInfo, idx) => {
+                if (playerInfo.joined) {
+                  return <div key={idx} className={styles.playerJoined} onClick={() => doShake(idx)} style={{
+                    color: playerColor[idx]
+                  }}>
+                    <button onClick={()=>playerSelectGame(idx, 0)} className={styles.gameSelectingBtn + (choicesArray[idx] === 0? ' ' + styles.gameSelected: '')}>Game 1</button>
+                    <button onClick={()=>playerSelectGame(idx, 1)} className={styles.gameSelectingBtn + (choicesArray[idx] === 1? ' ' + styles.gameSelected: '')}>Game 2</button>
+                    <button onClick={()=>playerSelectGame(idx, 2)} className={styles.gameSelectingBtn + (choicesArray[idx] === 2? ' ' + styles.gameSelected: '')}>Game 3</button>
+                  </div>;
+                } else {
+                  return <div key={idx} className={styles.playerNotJoined} style={{
+                    color: playerColor[idx]
+                  }}>
+                    <div>Not Joined</div>
+                  </div>;
+                }
+              })}
+            </div>
+          ),
+          [gameStatus.selected]: (
+            <div className={styles.row}>
+              Game {gameSelected + 1}
+            </div>
+          ),
+          [gameStatus.started]: (
+            <div className={styles.row}>
+              {playersInfo.map((playerInfo, idx) => {
+                if (playerInfo.joined) {
+                  return <div key={idx} className={styles.playerJoined} onClick={() => doShake(idx)} style={{
+                    color: playerColor[idx]
+                  }}>
+                    <div>Shake</div>
+                    <div>{scoreArray[idx]}</div>
+                  </div>;
+                } else {
+                  return <div key={idx} className={styles.playerNotJoined} style={{
+                    color: playerColor[idx]
+                  }}>
+                    <div>Not Joined</div>
+                  </div>;
+                }
+              })}
+            </div>
+          ),
+        }[gameStage]}
+      </>
+      :
+      <>
+        {
+          roomList.length > 0 ?
+            <div className={styles.roomItemWrap}>
+              {roomList.map((roomId) => {
+                return <Link to={generatePath(routes.debug, { roomId: roomId})} className={styles.roomItem}>{roomId}</Link>
+              })}
+            </div>
+          :
+            <div className={styles.row}>
+              No Game is Running
+            </div>
+        }
+      </>
+    }
+  </div>);
 };
 
 export default DebugPanel;
