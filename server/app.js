@@ -69,9 +69,7 @@ io.attach(httpsServer);
 io.on('connection', socket => {
   log(`socket connection - ${socket.id}`);
   setInterval(() => {
-    socket.emit('testing', {
-      data: 'testing only'
-    });
+    socket.emit('testing');
   }, 1000);
   socket.on('debug', (data) => {
     log(data);
