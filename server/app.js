@@ -63,6 +63,25 @@ const roomSettings = {
  */
 io.attach(httpsServer);
 
+
+// debug
+
+io.on('connection', socket => {
+  log(`socket connection - ${socket.id}`);
+  setInterval(() => {
+    socket.emit('testing', {
+      data: 'testing only'
+    });
+  }, 1000);
+  socket.on('debug', (data) => {
+    log(data);
+  })
+  socket.on('disconnect', () => {
+    log(`socket disconnect - ${socket.id}`);
+  })
+  // socket.on('createRoom', (options, ack) => {
+  // })
+})
 // using middleware
 /*
 // https://socket.io/docs/client-api/#With-query-parameters
@@ -81,7 +100,7 @@ io.use((socket, next) => {
 */
 // end of using middleware
 
-const roomManager = new RoomManager(io);
+// const roomManager = new RoomManager(io);
 /*
 let hostsList = [];
 let clientsList = [];
