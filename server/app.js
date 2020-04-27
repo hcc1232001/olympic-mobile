@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require("fs");
 const https = require('http');
+// const https = require('https');
 // const express = require("express");
 const io = require('socket.io')();
 const { v1: uuid } = require('uuid');
@@ -66,20 +67,35 @@ io.attach(httpsServer);
 
 // debug
 
-io.on('connection', socket => {
-  log(`socket connection - ${socket.id}`);
-  setInterval(() => {
-    socket.emit('testing');
-  }, 1000);
-  socket.on('debug', (data) => {
-    log(data);
-  })
-  socket.on('disconnect', () => {
-    log(`socket disconnect - ${socket.id}`);
-  })
-  // socket.on('createRoom', (options, ack) => {
-  // })
-})
+// io.on('connection', socket => {
+//   log(`socket connection - ${socket.id}`);
+//   setInterval(() => {
+//     socket.emit('testing');
+//     socket.emit('testingWithObjectData', { data: 'testing data' });
+//     socket.emit('testingWithArrayData', { data: [1,'2',"3", {5: true}]});
+//     socket.emit('testingWithStringData', { data: 'testing data'});
+//     socket.emit('testingWithIntergerData', { data: 123});
+//     socket.emit('testingWithFloatData', { data: 3.14});
+//     socket.emit('testingWithHexData', { data: 0x23});
+//     // socket.emit('testingWithBooleanData', false);
+//     socket.emit('testingWithBooleanData', { obj: false });
+//     socket.emit('testingWithUndefinedData', { obj: undefined });
+//     socket.emit('testingWithNullData', { obj: null });
+//   }, 1000);
+//   socket.on('debug', (data) => {
+//     log(data);
+//   })
+//   socket.on('changeStage', (data) => {
+//     log('changeStage');
+//     log(data);
+//   })
+//   socket.on('disconnect', () => {
+//     log(`socket disconnect - ${socket.id}`);
+//   })
+//   socket.on('createRoom', (options, ack) => {
+//     ack({ data: options.roomId });
+//   })
+// })
 // using middleware
 /*
 // https://socket.io/docs/client-api/#With-query-parameters
@@ -98,7 +114,7 @@ io.use((socket, next) => {
 */
 // end of using middleware
 
-// const roomManager = new RoomManager(io);
+const roomManager = new RoomManager(io);
 /*
 let hostsList = [];
 let clientsList = [];

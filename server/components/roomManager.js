@@ -17,7 +17,8 @@ class RoomManager {
       log('----- Client Connected -----');
       // createRoom for host use
       socket.on('createRoom', (options, ack) => {
-        // const newRoomId = (options.roomId === undefined? undefined: `00000000${options.roomId}`.substr(-8));
+        // leave room before create/join room
+        
         if (options.roomId === undefined || this.roomsList[options.roomId] === undefined) {
           log(`createRoom - ${options.roomId}`);
           const newRoom = this.createRoom(options.roomId);
@@ -32,16 +33,21 @@ class RoomManager {
         } else {
           log(`room not found - ${socket.id}`);
           if (typeof(ack) === "function") {
-            ack("failed, scan again");
+            ack({
+              data: "failed, scan again"
+            });
           }
         }
       });
 
+      // debug, maybe remove on production
       socket.on('debugRoom', (options, ack) => {
         socket.join('roomDebug');
         if (options.roomId === undefined || this.roomsList[options.roomId] === undefined) {
           if (typeof(ack) === "function") {
-            ack(Object.keys(this.roomsList));
+            ack({
+              data: Object.keys(this.roomsList)
+            });
           }
         } else {
           this.roomsList[options.roomId].addDebug(socket, ack);
@@ -66,6 +72,10 @@ class RoomManager {
 
   addPlayer(playerId, room) {
     this.playersList[playerId] = room;
+  }
+  
+  addHost(hostId, room) {
+    this.hostsList[hostId] = room;
   }
 
   // call from Room

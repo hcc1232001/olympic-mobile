@@ -12,11 +12,11 @@ import spriteImageUrl from 'media/sprite/offline-sprite-2x.png';
 import styles from './debugPanel.module.css';
 
 const playerColor = [
-  '#0885c2',
-  '#fbb132',
-  '#000000',
-  '#1c8b3c',
-  '#ed334e'
+  "#ed334e",
+  "#00652e",
+  "#0080C7",
+  "#fbb130",
+  "#231f20",
 ];
 
 const gameStatus = {
@@ -42,6 +42,7 @@ const gameStatusText = {
 };
 
 const distanceMultipliersOptions = [
+  0.1,
   1,
   2,
   5,
@@ -76,8 +77,8 @@ const DebugPanel = () => {
   const [roomList, setRoomList] = useState([]);
   const [qrcodeArray, setQrcodeArray] = useState([]);
   const [playersInfo, setPlayersInfo] = useState([]);
-  const [scoreArray, setScoreArray] = useState([0, 0, 0, 0, 0]);
-  const [choicesArray, setChoicesArray] = useState([0, 0, 0, 0, 0]);
+  const [scoreArray, setScoreArray] = useState(new Array(5).fill(0));
+  const [choicesArray, setChoicesArray] = useState(new Array(5).fill(-1));
   const [gameSelected, setGameSelected] = useState(0);
   const [distanceMultiplier, setDistanceMultiplier] = useState(1);
   const {roomId} = useParams();
@@ -95,9 +96,9 @@ const DebugPanel = () => {
             roomId: roomId
           },
           ack: (result) => {
-            console.log(result);
-            if (Array.isArray(result)) {
-              setRoomList(result);
+            console.log(result['data']);
+            if (Array.isArray(result['data'])) {
+              setRoomList(result['data']);
             }
           }
         }
@@ -115,22 +116,25 @@ const DebugPanel = () => {
         // },
         {
           listener: 'gameStage',
-          callback: (stageId, additionalParams) => {
+          callback: (data) => {
+            const stageId = data['data'];
+            const additionalParams = data['playersInfo'];
             console.log('gameStage', stageId, additionalParams);
             setGameStage(stageId);
             if (stageId === gameStatus.started) {
               for (let i = 0; i < tempScoreArray.length; i++) {
                 tempScoreArray[i] = 0;
               }
-              setScoreArray([0, 0, 0, 0, 0]);
+              setScoreArray(new Array(5).fill(0));
             } else if (stageId === gameStatus.selecting) {
-              setChoicesArray([0, 0, 0, 0, 0]);
+              setChoicesArray(new Array(5).fill(-1));
             }
           }
         },
         {
           listener: 'playersInfo',
-          callback: (playersInfo) => {
+          callback: (data) => {
+            const playersInfo = data['data'];
             console.log('playersInfo', playersInfo);
             setPlayersInfo(playersInfo);
             const tempQrcodeArray = [];
@@ -165,21 +169,24 @@ const DebugPanel = () => {
         },
         {
           listener: 'gameChoices',
-          callback: (choicesArray) => {
+          callback: (data) => {
+            const choicesArray = data['data'];
             console.log('gameChoices', choicesArray);
             setChoicesArray(choicesArray);
           }
         },
         {
           listener: 'gameSelected',
-          callback: (gameId) => {
+          callback: (data) => {
+            const gameId = data['data'];
             console.log('gameSelected', gameId);
             setGameSelected(gameId);
           }
         },
         {
           listener: 'playersShake',
-          callback: (shakeArray) => {
+          callback: (data) => {
+            const shakeArray = data['data'];
             console.log('playersShake', shakeArray);
             // const tempScoreArray = [...scoreArray];
             shakeArray.forEach((score, idx) => {
@@ -406,7 +413,7 @@ const DebugPanel = () => {
           roomList.length > 0 ?
             <div className={styles.roomItemWrap}>
               {roomList.map((roomId) => {
-                return <Link key={roomId} to={generatePath(routes.debug, { roomId: roomId })} className={styles.roomItem}>{roomId}</Link>
+                return <Link key={roomId} to={generatePath(routes.debug, { roomId: roomId })} className={styles.roomItem}>{roomId.split('-')[0]}</Link>
               })}
             </div>
           :

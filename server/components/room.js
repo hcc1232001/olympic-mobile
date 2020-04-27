@@ -17,19 +17,19 @@ const gameStatus = {
 };
 const stageTimer = {
   [gameStatus.idle]:      -1,
-  [gameStatus.waiting]:   20,
-  [gameStatus.selecting]: 10,
-  [gameStatus.selected]:  5,
-  [gameStatus.ready]:     5,
-  [gameStatus.started]:   30,
-  [gameStatus.result]:    10,
+  [gameStatus.waiting]:   -1, // 20,
+  [gameStatus.selecting]: -1, // 10,
+  [gameStatus.selected]:  -1, // 5,
+  [gameStatus.ready]:     -1, // 5,
+  [gameStatus.started]:   -1, // 30,
+  [gameStatus.result]:    -1, // 10,
   [gameStatus.offline]:   -1,
-  // waitingTimeout: 30,
-  // readyTimeout:   3,
-  // gameDuration:   60,
-  // resultTimeout:  30,
-  // endedTimeout:   5,
 };
+const gameTypeArray = [
+  0, // atheletics
+  1, // cycling
+  2, // swimming
+]
 class Room {
   constructor({roomId, roomManager, playersCount, hostCount}) {
     this.roomStatus = gameStatus.offline;
@@ -37,7 +37,7 @@ class Room {
     this.socketio = roomManager.socketio;
     this.playersCount = playersCount;
     this.hostCount = hostCount;
-    this.roomId = (roomId? `00000000${roomId}`.substr(-8): uuid().split('-')[0]);
+    this.roomId = (roomId? roomId: uuid());
     this.gameId = 1;
     this.players = [];
     this.hosts = [];
@@ -45,14 +45,23 @@ class Room {
     this.shakeArray = [];
     this.gameChoices = [];
     this.stageTimer = null;
-    this.distanceMultiplier = 1;
+    // the follow 4 params should be get in db
+    this.distanceMultiplier = 0.1;
+    this.totalDistance = 2884;
+    this.accumulatedDistance = 128;
+    this.totalVisit = 10;
+    // the above 4 params should be get in db
+    
     this.roomManager.addRoom(this.roomId, this);
     // this.roomManager.addHost();
     this.initialRoom();
   }
 
   emit(eventName, data, ...additionalParams) {
-    this.socketio.to(this.roomId).emit(eventName, data, ...additionalParams);
+    this.socketio.to(this.roomId).emit(eventName, {
+      data: data,
+      ...additionalParams
+    });
   }
 
   // initDb() {
@@ -80,7 +89,7 @@ class Room {
         this.clearAllTimeout();
         if (prevStage !== gameStatus['waiting']) {
           this.generateAllPlayersId();
-          this.gameChoices = new Array(this.playersCount).fill(0);
+          this.gameChoices = new Array(this.playersCount).fill(-1);
         }
         additionalParams.push({
           playersInfo: this.playersStatus
@@ -116,12 +125,19 @@ class Room {
         // random the game base on users choices
         const gameIdxToRand = [];
         this.players.forEach((player, idx) => {
-          if (player.joined) {
+          if (player.joined && this.gameChoices[idx] !== -1) {
             gameIdxToRand.push(this.gameChoices[idx]);
           }
         });
-        const finalGameIdx = Math.floor(Math.random() * gameIdxToRand.length);
-        this.gameId = gameIdxToRand[finalGameIdx];
+        if (gameIdxToRand.length) {
+          // if any one of the client choosed the game
+          const finalGameIdx = Math.floor(Math.random() * gameIdxToRand.length);
+          this.gameId = gameIdxToRand[finalGameIdx];
+        } else {
+          // if no one has choosed game
+          const finalGameIdx = Math.floor(Math.random() * gameTypeArray.length);
+          this.gameId = gameTypeArray[finalGameIdx];
+        }
         additionalParams.push({
           gameSelected: this.gameId
         });
@@ -153,12 +169,14 @@ class Room {
       case gameStatus['result']:
         log(`game result`);
         // emit game result
+        const distanceShaked = this.shakeArray.reduce((prev, curr) => prev + curr, 0) * this.distanceMultiplier;
         this.players.forEach((player, idx) => {
           if (player['joined']) {
-            player['socket'].emit('gameResult', this.shakeArray[idx] * this.distanceMultiplier);
+            player['socket'].emit('gameResult', {
+              data: distanceShaked// this.shakeArray[idx] * this.distanceMultiplier
+            });
           }
         });
-        const distanceShaked = this.shakeArray.reduce((prev, curr) => prev + curr, 0) * this.distanceMultiplier;
         this.hosts.forEach((hostSocket) => {
           hostSocket.emit('gameResult', distanceShaked);
         });
@@ -242,13 +260,23 @@ class Room {
   addHost(hostSocket, ack) {
     this.hosts.push(hostSocket);
     hostSocket.join(this.roomId);
+    // this.roomManager.
     log(`host join - ${this.roomId}`);
     this.bindSocketEventForHost(hostSocket);
     if (typeof(ack) === "function") {
-      ack(this.roomId);
+      ack({
+        data: this.roomId,
+        totalDistance: this.totalDistance,
+        accumulatedDistance: this.accumulatedDistance,
+        distanceMultiplier: this.distanceMultiplier,
+        totalVisit: this.totalVisit,
+      });
     }
-    hostSocket.emit('playersInfo', this.playersStatus);
-    hostSocket.emit('gameStage', this.roomStatus, {
+    hostSocket.emit('playersInfo', {
+      data: this.playersStatus
+    });
+    hostSocket.emit('gameStage', {
+      data: this.roomStatus,
       playersInfo: this.playersStatus
     });
   }
@@ -259,10 +287,15 @@ class Room {
     log(`debug join - ${this.roomId}`);
     this.bindSocketEventForDebug(debugSocket);
     if (typeof(ack) === "function") {
-      ack(this.roomId);
+      ack({
+        data: this.roomId
+      });
     }
-    debugSocket.emit('playersInfo', this.playersStatus);
-    debugSocket.emit('gameStage', this.roomStatus, {
+    debugSocket.emit('playersInfo', {
+      data: this.playersStatus
+    });
+    debugSocket.emit('gameStage', {
+      data: this.roomStatus,
       playersInfo: this.playersStatus
     });
     debugSocket.emit('updateDistanceMultiplier', this.distanceMultiplier);
@@ -281,23 +314,32 @@ class Room {
           playerSocket.join(this.roomId);
           log(`player joined - ${this.roomId}: ${playerJoiningIndex}`);
           if (typeof(ack) === "function") {
-            ack("joined");
+            ack({
+              data: "joined",
+              index: playerJoiningIndex
+            });
           }
           // this.emit('playersInfo', this.players);
           setImmediate(()=>this.updateGameStage(gameStatus.waiting));
         } else {
           if (typeof(ack) === "function") {
-            ack("failed, occupied");
+            ack({
+              data: "failed, occupied"
+            });
           }
         }
       } else {
         if (typeof(ack) === "function") {
-          ack("failed, playerId not found (???)");
+          ack({
+            data: "failed, playerId not found (???)"
+          });
         }
       }
     } else {
       if (typeof(ack) === "function") {
-        ack("failed, game started");
+        ack({
+          data: "failed, game started"
+        });
       }
     }
   }
@@ -372,11 +414,24 @@ class Room {
     // nothing to do if the timer handled in server
 
     // change stage if the timer handled by frontend
-    socket.on('changeStage', (newStage) => {
+    socket.on('changeStage', (data) => {
+      const newStage = gameStatus[data['data']];
+      log(`changeStage: ${newStage}`);
       if (stageTimer[newStage] !== undefined) {
+        log("change to new stage");
         this.updateGameStage(newStage);
+      } else {
+        log("new stage not found");
       }
     });
+    // submit score event
+    socket.on('submitScore', (data) => {
+      const scoreArray = data['data'];
+      // expect scoreArray format
+      // array of the five players shake count
+      // e.g. [10, 21, 17, 15, 6]
+    });
+
     socket.on('disconnect', () => {
       const hostIdx = this.hosts.findIndex(hostSocket => hostSocket === socket);
       if (hostIdx !== -1) {
@@ -394,18 +449,23 @@ class Room {
       this.generatePlayer(playerIdx);
     });
     socket.on('shake', () => {
-      if (this.roomStatus === gameStatus.started) {
-        this.shakeArray[playerIdx] += 1;
+      if (this.roomStatus === gameStatus.started || this.roomStatus === gameStatus.ready) {
+        if (this.roomStatus === gameStatus.started) {
+          this.shakeArray[playerIdx] += 1;
+        }
         const shakeMessage = new Array(this.playersCount).fill(0);
         shakeMessage[playerIdx] = 1
         this.emit('playersShake', shakeMessage);
       }
     });
-    socket.on('selectGame', (gameId, ack) => {
+    socket.on('selectGame', (data, ack) => {
+      const gameId = data["data"];
       if (this.roomStatus === gameStatus.selecting) {
         this.gameChoices[playerIdx] = gameId;
         this.emit('gameChoices', this.gameChoices);
-        ack(gameId);
+        ack({
+          data: gameId
+        });
       }
     });
   }

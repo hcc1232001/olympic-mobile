@@ -2,6 +2,10 @@
   font-family: PressStart;
   src: url(./media/fonts/PressStart2P-Regular.ttf);
 }
+@font-face {
+  font-family: SpaceGrotesk;
+  src: url(./media/fonts/SpaceGrotesk-Bold.ttf);
+}
 * {
   box-sizing: border-box;
 }
