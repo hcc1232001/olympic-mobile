@@ -217,7 +217,7 @@ class Room {
     // create new player slots
     for (let i = 0; i < this.playersCount; i++) {
       const newPlayer = {
-        playerId: uuid(),
+        playerId: uuid().split('-')[0],
         joined: false,
         socket: null
       };
@@ -230,7 +230,7 @@ class Room {
   generatePlayer(idx) {
     this.kickPlayer(idx);
     this.players[idx] = {
-      playerId: uuid(),
+      playerId: uuid().split('-')[0],
       joined: false,
       socket: null
     };
@@ -466,6 +466,22 @@ class Room {
         ack({
           data: gameId
         });
+
+        // check if all selected
+        const totalPlayers = this.playersStatus.reduce((total, player) => {
+          return total + ~~(player.joined === true);
+        }, 0);
+
+        const totalSelected = this.gameChoices.reduce((total, choice) => {
+          return total + ~~(choice !== -1);
+        }, 0);
+        console.log(JSON.stringify(this.playersStatus, ['playerid', 'joined']));
+        console.log(JSON.stringify(this.gameChoices));
+        console.log("totalPlayers: ", totalPlayers);
+        console.log("totalSelected: ", totalSelected);
+        if (totalPlayers === totalSelected) {
+          this.updateGameStage(gameStatus.selected);
+        }
       }
     });
   }

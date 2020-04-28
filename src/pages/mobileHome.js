@@ -263,7 +263,7 @@ const MobileHomePage = () => {
       });
     }
   }
-  return <div ref={setGameWrapper} onClick={setFullscreen} className={styles.wrapper}>
+  return <div ref={setGameWrapper} className={styles.wrapper}>
     {{
       [gameStatus.idle]: (
         <div className={[styles['stage'], styles['stage-idle'], styles['active']].join(' ')}>
