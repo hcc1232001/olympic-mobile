@@ -57,7 +57,12 @@ class Room {
     this.initialRoom();
   }
 
-  emit(eventName, data, ...additionalParams) {
+  emit(eventName, data, additionalParams) {
+    log(`emit - ${eventName} - ${JSON.stringify({
+      data: data,
+      ...additionalParams
+    })}`);
+    log("emit");
     this.socketio.to(this.roomId).emit(eventName, {
       data: data,
       ...additionalParams
@@ -74,7 +79,10 @@ class Room {
 
   updateGameStage(newStage) {
     if (newStage === this.roomStatus) {
-      this.emit('playersInfo', this.playersStatus);
+      this.emit('playersInfo', this.playersStatus, {
+        accumulatedDistance: this.accumulatedDistance,
+        totalVisit: this.totalVisit,
+      });
       this.emit('gameStage', this.roomStatus, {
         playersInfo: this.playersStatus
       });
@@ -94,7 +102,10 @@ class Room {
         additionalParams.push({
           playersInfo: this.playersStatus
         });
-        this.emit('playersInfo', this.playersStatus);
+        this.emit('playersInfo', this.playersStatus, {
+          accumulatedDistance: this.accumulatedDistance,
+          totalVisit: this.totalVisit,
+        });
         break;
       case gameStatus['waiting']:
         log(`game waiting`);
@@ -102,7 +113,10 @@ class Room {
         additionalParams.push({
           playersInfo: this.playersStatus
         });
-        this.emit('playersInfo', this.playersStatus);
+        this.emit('playersInfo', this.playersStatus, {
+          accumulatedDistance: this.accumulatedDistance,
+          totalVisit: this.totalVisit,
+        });
         if (stageTimer[newStage] > 0) {
           this.stageTimer = setTimeout(() => {
             this.updateGameStage(gameStatus['selecting']);
@@ -170,8 +184,10 @@ class Room {
         log(`game result`);
         // emit game result
         const distanceShaked = this.shakeArray.reduce((prev, curr) => prev + curr, 0) * this.distanceMultiplier;
+        let playerJoined = 0;
         this.players.forEach((player, idx) => {
           if (player['joined']) {
+            playerJoined++;
             player['socket'].emit('gameResult', {
               data: distanceShaked// this.shakeArray[idx] * this.distanceMultiplier
             });
@@ -194,6 +210,10 @@ class Room {
         }
         // save to db here
         // this.saveGameResult();
+        // temp save to local variable
+        this.accumulatedDistance += distanceShaked;
+        this.totalVisit += playerJoined;
+
         break;
       case gameStatus['offline']:
         break;
@@ -236,7 +256,10 @@ class Room {
     };
     this.shakeArray[idx] = false;
     this.roomManager.addPlayer(this.players[idx].playerId, this);
-    this.emit('playersInfo', this.playersStatus);
+    this.emit('playersInfo', this.playersStatus, {
+      accumulatedDistance: this.accumulatedDistance,
+      totalVisit: this.totalVisit,
+    });
     const connectedPlayersCount = this.players.reduce((prev, curr) => {
       return prev + ~~curr['joined'];
     }, 0);
@@ -273,7 +296,9 @@ class Room {
       });
     }
     hostSocket.emit('playersInfo', {
-      data: this.playersStatus
+      data: this.playersStatus,
+      accumulatedDistance: this.accumulatedDistance,
+      totalVisit: this.totalVisit,
     });
     hostSocket.emit('gameStage', {
       data: this.roomStatus,
