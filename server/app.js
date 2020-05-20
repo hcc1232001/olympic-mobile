@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require("fs");
-// const https = require('http');
-const https = require('https');
+const https = require('http');
+// const https = require('https');
 // const express = require("express");
 const io = require('socket.io')();
 const { v1: uuid } = require('uuid');
@@ -15,14 +15,14 @@ const log = console.log;
 
 // https://www.selfsignedcertificate.com/
 // if need local deployment, can generate a cert for the local ip and load them here
-const httpsOption = {
-  key:  fs.readFileSync('./server/cert/10.0.1.40.key').toString(),
-  cert: fs.readFileSync('./server/cert/10.0.1.40.cert').toString()
-}
+// const httpsOption = {
+//   key:  fs.readFileSync('./server/cert/10.0.1.40.key').toString(),
+//   cert: fs.readFileSync('./server/cert/10.0.1.40.cert').toString()
+// }
 // local deployment use
 
-const httpsServer = https.createServer(httpsOption, (req, res) => {
-// const httpsServer = https.createServer((req, res) => {
+// const httpsServer = https.createServer(httpsOption, (req, res) => {
+const httpsServer = https.createServer((req, res) => {
   // api for distance and visit
   if (req.url === '/data') {
     res.writeHead(200, {
