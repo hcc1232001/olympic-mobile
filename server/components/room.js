@@ -58,11 +58,11 @@ class Room {
   }
 
   emit(eventName, data, additionalParams) {
-    log(`emit - ${eventName} - ${JSON.stringify({
-      data: data,
-      ...additionalParams
-    })}`);
-    log("emit");
+    // log(`emit - ${eventName} - ${JSON.stringify({
+    //   data: data,
+    //   ...additionalParams
+    // })}`);
+    // log("emit");
     this.socketio.to(this.roomId).emit(eventName, {
       data: data,
       ...additionalParams

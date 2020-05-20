@@ -3,7 +3,7 @@ const routes = {
   landing: '/landing',
   debug: '/debug/:roomId?',
   mobileHome: '/mobileHome/:playerId?',
-  test: '/test'
+  test: '/test',
 };
 
 export default routes;
