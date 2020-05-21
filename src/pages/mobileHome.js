@@ -8,6 +8,7 @@ import FanIconSmall from 'components/fanIconSmall';
 import ShakeIcon from 'components/shakeIcon';
 
 import useDeviceMotion from 'components/useDeviceMotion';
+import useImagePreload from 'components/useImagePreload';
 
 import withSocketio from 'components/withSocketio';
 
@@ -48,7 +49,51 @@ const playerColorCodeOfIdx = [
   "#fbb130",
   "#231f20",
 ];
+const imagesArray = [
+  '/media/images/title.png',
+  '/media/images/idle.png',
+  '/media/images/landing-counter1.png',
+  '/media/images/landing-counter2.png',
+  '/media/images/logo-white.png',
+  '/media/images/waiting.png',
+  '/media/images/background-logo.png',
+  '/media/images/chosing.png',
+  '/media/sprites/sports.png',
+  '/media/images/atheletics-zh.png',
+  '/media/images/atheletics-en.png',
+  '/media/images/cycle-zh.png',
+  '/media/images/cycle-en.png',
+  '/media/images/swim-zh.png',
+  '/media/images/swim-en.png',
+  '/media/images/gacha-top-red.png',
+  '/media/images/gacha-bottom-red.png',
+  '/media/images/gacha-top-blue.png',
+  '/media/images/gacha-bottom-blue.png',
+  '/media/images/gacha-top-yellow.png',
+  '/media/images/gacha-bottom-yellow.png',
+  '/media/images/cheerhk.png',
+  '/media/images/atheletics-zh-inv.png',
+  '/media/images/atheletics-en-inv.png',
+  '/media/images/cycle-zh-inv.png',
+  '/media/images/cycle-en-inv.png',
+  '/media/images/swim-zh-inv.png',
+  '/media/images/swim-en-inv.png',
+  '/media/images/get.png',
+  '/media/images/set.png',
+  '/media/images/go.png',
+  '/media/images/congratz-red.png',
+  '/media/images/congratz-green.png',
+  '/media/images/congratz-yellow.png',
+  '/media/images/congratz-blue.png',
+  '/media/images/congratz-black.png',
+  '/media/images/result.png',
+  '/media/sprites/number.png',
+  '/media/images/remain-zh.png',
+  '/media/images/share-zh.png',
+  '/media/images/share-en.png',
+];
 const MobileHomePage = () => {
+  const [preloadProgress] = useImagePreload(imagesArray);
   const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceMotion();
   const [serverData, setServerUrl] = useServerData(config.apiUrl);
   const [gameStage, setGameStage] = useState(gameStatus['idle']);
@@ -141,11 +186,14 @@ const MobileHomePage = () => {
         opacity: 0,
         transition: `all ${randomDuration}s`
       }}
-      key={Date.now()}
+      key={`${Date.now()}${Math.random()}`}
     />;
-    setShakeIconArray((prevShakeIconArray) => {
-      return [...prevShakeIconArray.slice(-15), icon];
-    });
+    requestAnimationFrame(() => {
+      setShakeIconArray((prevShakeIconArray) => {
+        return [...prevShakeIconArray.slice(-15), icon];
+        // return [...prevShakeIconArray, icon];
+      });
+    })
   }
   
   useEffect(() => {
@@ -155,9 +203,9 @@ const MobileHomePage = () => {
     }
   }, [moveCounter]);
   useEffect(() => {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       setStageChanging(gameStage);
-    });
+    }, 20);
     if (gameStage === gameStatus.ready) {
       setShakeIconArray([]);
     }
@@ -262,6 +310,16 @@ const MobileHomePage = () => {
   }
   return (
     <div ref={setGameWrapper} className={styles.wrapper}>
+      {<div className={[styles["preloadWrapper"], preloadProgress < 1? styles["active"]: null].join(' ')}>
+        <div className={styles['progress']}>
+          <div className={styles['bar']} style={{
+            width: `${preloadProgress * 100}%`
+          }} />
+        </div>
+        <div className={styles['percent']}>
+          {`${Math.round(preloadProgress * 100)}%`}
+        </div>
+      </div>}
       <div className={[styles['stage'], styles[gameStageClass[gameStage]], (stageChanging === gameStage? styles['active']: null), (gameSelected !== -1? styles.selected: null)].join(' ')}>
         <div className={styles["background"]}>
           <div className={styles["texture"]} />
@@ -367,7 +425,7 @@ const MobileHomePage = () => {
           <div onClick={shake}>
             <FanIcon className={[styles["fanIcon"]].join(' ')} colorCodeInHex={playerColorCode} />
           </div>
-          {shakeIconArray}
+          {shakeIconArray.slice(-16)}
         </>}
         {gameStage === gameStatus.result && <>
           <div className={styles["background"]}>
@@ -412,7 +470,7 @@ const MobileHomePage = () => {
         </>
         }
         <div id={styles["debug"]}>
-        {moveCounter}
+        {shakeIconArray.length}
         <br />
         {gameStage}
         <br />

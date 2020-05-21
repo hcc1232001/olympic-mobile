@@ -22,7 +22,7 @@
   left: 20vw;
   width: 60vw;
   height: 36vw;
-  background-image: url("../media/images/title.png");
+  background-image: url("/media/images/title.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -130,16 +130,6 @@
   z-index: 0;
 }
 .stage-idle .title {
-  /* position: absolute;
-  top: 12vw;
-  left: 20vw;
-  width: 60vw;
-  height: 36vw;
-  background-image: url("../media/images/title.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  transform-origin: bottom; */
 }
 .stage-idle .counter {
   position: absolute;
@@ -181,7 +171,7 @@
   height: 16vw;
   font-size: 7vw;
   text-align: center;
-  background-image: url("../media/images/logo-white.png");
+  background-image: url("/media/images/logo-white.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -248,7 +238,7 @@
 
 /* stage waiting */
 .stage-waiting .marquee {
-  background-image: url('../media/images/waiting.png');
+  background-image: url('/media/images/waiting.png');
 }
 .stage-waiting .background {
   position: absolute;
@@ -303,10 +293,10 @@
 
 }
 .stage-selecting .marquee {
-  background-image: url('../media/images/chosing.png');
+  background-image: url('/media/images/chosing.png');
 }
 .stage-selecting.selected .marquee {
-  background-image: url('../media/images/waiting.png');
+  background-image: url('/media/images/waiting.png');
 }
 .stage-selecting .background {
   position: absolute;
@@ -413,12 +403,12 @@
 }
 
 .stage-selecting .gameButton0 .contentWrapper .zh {
-  background-position: center calc(16.66666667vh + 2vw);
-  background-image: url("../media/images/atheletics-zh.png");
+  background-position: center 16.66666667%;
+  background-image: url("/media/images/atheletics-zh.png");
 }
 .stage-selecting .gameButton0 .contentWrapper .en {
-  background-position: center calc(16.66666667vh + 2vw);
-  background-image: url("../media/images/atheletics-en.png");
+  background-position: center 16.66666667%;
+  background-image: url("/media/images/atheletics-en.png");
 }
 .stage-selecting .gameButton0 .contentWrapper .ani {
   animation: sportSpriteRun 2.5s linear infinite forwards,
@@ -426,24 +416,24 @@
   transform: scale(0.5);
 }
 .stage-selecting .gameButton1 .contentWrapper .zh {
-  background-position: center calc(50vh - 4vw);
-  background-image: url("../media/images/cycle-zh.png");
+  background-position: center 50%;
+  background-image: url("/media/images/cycle-zh.png");
 }
 .stage-selecting .gameButton1 .contentWrapper .en {
-  background-position: center calc(50vh - 4vw);
-  background-image: url("../media/images/cycle-en.png");
+  background-position: center 50%;
+  background-image: url("/media/images/cycle-en.png");
 }
 .stage-selecting .gameButton1 .contentWrapper .ani {
   animation: sportSpriteCycle 2.5s linear infinite forwards,
               sportSpriteCycleStill 1.2s steps(6) infinite forwards;
 }
 .stage-selecting .gameButton2 .contentWrapper .zh {
-  background-position: center calc(83.33333333vh - 8vw);
-  background-image: url("../media/images/swim-zh.png");
+  background-position: center 83.33333333%;
+  background-image: url("/media/images/swim-zh.png");
 }
 .stage-selecting .gameButton2 .contentWrapper .en {
-  background-position: center calc(83.33333333vh - 8vw);
-  background-image: url("../media/images/swim-en.png");
+  background-position: center 83.33333333%;
+  background-image: url("/media/images/swim-en.png");
 }
 .stage-selecting .gameButton2 .contentWrapper .ani {
   animation: sportSpriteSwim 2.5s linear infinite forwards,
@@ -526,7 +516,7 @@
   background-image: linear-gradient(to top, #49b9e9 , #eaf9fe);
 }
 .stage-selected .marquee {
-  background-image: url('../media/images/cheerhk.png');
+  background-image: url('/media/images/cheerhk.png');
   z-index: 3;
 }
 
@@ -555,24 +545,6 @@
 }
 .stage-selected .gachaBottom {
   background-position: bottom;
-}
-.stage-selected .gacha.red .gachaTop {
-  background-image: url("/media/images/gacha-top-red.png");
-}
-.stage-selected .gacha.red .gachaBottom {
-  background-image: url("/media/images/gacha-bottom-red.png");
-}
-.stage-selected .gacha.blue .gachaTop {
-  background-image: url("/media/images/gacha-top-blue.png");
-}
-.stage-selected .gacha.blue .gachaBottom {
-  background-image: url("/media/images/gacha-bottom-blue.png");
-}
-.stage-selected .gacha.yellow .gachaTop {
-  background-image: url("/media/images/gacha-top-yellow.png");
-}
-.stage-selected .gacha.yellow .gachaBottom {
-  background-image: url("/media/images/gacha-bottom-yellow.png");
 }
 .stage-selected .resultWrapper {
   position: absolute;
@@ -668,22 +640,22 @@
   animation: languageSwitching 10s 7s linear infinite;
 }
 .stage-selected.active .gameName.game0 .zh {
-  background-image: url("../media/images/atheletics-zh-inv.png");
+  background-image: url("/media/images/atheletics-zh-inv.png");
 }
 .stage-selected.active .gameName.game0 .en {
-  background-image: url("../media/images/atheletics-en-inv.png");
+  background-image: url("/media/images/atheletics-en-inv.png");
 }
 .stage-selected.active .gameName.game1 .zh {
-  background-image: url("../media/images/cycle-zh-inv.png");
+  background-image: url("/media/images/cycle-zh-inv.png");
 }
 .stage-selected.active .gameName.game1 .en {
-  background-image: url("../media/images/cycle-en-inv.png");
+  background-image: url("/media/images/cycle-en-inv.png");
 }
 .stage-selected.active .gameName.game2 .zh {
-  background-image: url("../media/images/swim-zh-inv.png");
+  background-image: url("/media/images/swim-zh-inv.png");
 }
 .stage-selected.active .gameName.game2 .en {
-  background-image: url("../media/images/swim-en-inv.png");
+  background-image: url("/media/images/swim-en-inv.png");
 }
 .stage-selected.active .result {
   opacity: 1;
@@ -741,11 +713,11 @@
   transform: translate(-50%, 150vh);
 }
 .stage-ready .get-image {
-  background-image: url("../media/images/get.png");
+  background-image: url("/media/images/get.png");
   animation: getSetGoAni 2.5s -1s cubic-bezier(0, 1, 1, 0) forwards;
 }
 .stage-ready .set-image {
-  background-image: url("../media/images/set.png");
+  background-image: url("/media/images/set.png");
   animation: getSetGoAni 2.5s 0.5s cubic-bezier(0, 1, 1, 0) forwards;
 }
 .shake-icon {
@@ -761,7 +733,7 @@
   background-size: contain;
   background-repeat: no-repeat;
   transform: translate(-50%, -50%) scale(0);
-  background-image: url("../media/images/go.png");
+  background-image: url("/media/images/go.png");
   opacity: 0;
   /* animation: getSetGoAni 5s -2s cubic-bezier(0, 1, 1, 0) forwards; */
 }
@@ -842,46 +814,38 @@
   animation-direction: reverse;
 }
 .splashScreen .bannerType0 .banner {
-  background-image: url("../media/images/congratz-red.png");
+  background-image: url("/media/images/congratz-red.png");
   animation-delay: 0ms;
   animation-duration: 2s;
 }
 .splashScreen .bannerType1 .banner {
-  background-image: url("../media/images/congratz-green.png");
+  background-image: url("/media/images/congratz-green.png");
   animation-delay: -0.2s;
   animation-duration: 2.2s;
 }
 .splashScreen .bannerType2 .banner {
-  background-image: url("../media/images/congratz-yellow.png");
+  background-image: url("/media/images/congratz-yellow.png");
   animation-delay: -0.4s;
   animation-duration: 2.4s;
 }
 .splashScreen .bannerType3 .banner {
-  background-image: url("../media/images/congratz-blue.png");
+  background-image: url("/media/images/congratz-blue.png");
   animation-delay: -0.6s;
   animation-duration: 2.6s;
 }
 .splashScreen .bannerType4 .banner {
-  background-image: url("../media/images/congratz-black.png");
+  background-image: url("/media/images/congratz-black.png");
   animation-delay: -0.8s;
   animation-duration: 2.8s;
 }
 .stage-result .title {
-  position: absolute;
   top: 4vw;
-  left: 20vw;
-  width: 60vw;
-  height: 36vw;
-  background-image: url("../media/images/title.png");
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 .stage-result .header {
   position: absolute;
   top: 34vw;
   left: 8vw;
-  background-image: url("../media/images/result.png");
+  background-image: url("/media/images/result.png");
   width: 55vw;
   height: 11vw;
   background-size: contain;
@@ -900,7 +864,7 @@
 }
 .stage-result .score .number {
   flex: 0 0 33.333333333%;
-  background-image: url("../media/sprite/number.png");
+  background-image: url("/media/sprites/number.png");
   background-size: auto 100%;
 }
 .stage-result .score .number0 {
@@ -968,7 +932,7 @@
 .stage-result .remain .zh {
 
   /* width: 17vw; */
-  background-image: url("../media/images/remain-zh.png");
+  background-image: url("/media/images/remain-zh.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: left;
@@ -1055,11 +1019,11 @@
 }
 .stage-result .shareToFb .zh {
   animation: languageSwitching 10s -5s linear infinite;
-  background-image: url("../media/images/share-zh.png");
+  background-image: url("/media/images/share-zh.png");
 }
 .stage-result .shareToFb .en {
   animation: languageSwitching 10s linear infinite;
-  background-image: url("../media/images/share-en.png");
+  background-image: url("/media/images/share-en.png");
 }
 
 
@@ -1083,6 +1047,43 @@
   transform: translateY(-50%);
   text-align: center;
   font-size: 10vw;
+}
+
+.preloadWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(to top, #49b9e9 , #eaf9fe);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s 0.6s;
+}
+.preloadWrapper.active {
+  opacity: 1;
+  visibility: visible;
+}
+.preloadWrapper .progress {
+  width: 50vw;
+  border: 2px solid #000000;
+  height: 3vh;
+  border-radius: 3vh;
+  overflow: hidden;
+}
+.preloadWrapper .progress .bar {
+  height: 100%;
+  background-color: red;
+  transition: width 0.4s;
+}
+.preloadWrapper .percent {
+  padding-top: 1vh;
+  font-size: 5vw;
 }
 /* animations */
 @keyframes marqueeLoop {
