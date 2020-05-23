@@ -89,9 +89,15 @@ const imagesArray = [
   '/media/images/result.png',
   '/media/sprites/number.png',
   '/media/images/remain-zh.png',
-  '/media/images/share-zh.png',
-  '/media/images/share-en.png',
 ];
+
+const addCommas = (x) => {
+  if (typeof x === "number")
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  if (typeof x === "string")
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return x;
+}
 const MobileHomePage = () => {
   const [preloadProgress] = useImagePreload(imagesArray);
   const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceMotion();
@@ -331,7 +337,7 @@ const MobileHomePage = () => {
         {gameStage === gameStatus.idle && <>
           <div className={styles["title"]} />
           <div className={[styles["counter"], styles["counter1"]].join(' ')}>
-            <span>{serverData.d}</span> km
+            <span>{addCommas(serverData.d)}</span> km
             <div className={styles["counterHints"]}>
               <TextAnimation 
                 texts={[
@@ -342,7 +348,7 @@ const MobileHomePage = () => {
             </div>
           </div>
           <div className={[styles["counter"], styles["counter2"]].join(' ')}>
-            <span>{serverData.v}</span>
+            <span>{addCommas(serverData.v)}</span>
             <div className={styles["counterHints"]}>
               <TextAnimation 
                 texts={[
@@ -425,7 +431,7 @@ const MobileHomePage = () => {
           <div onClick={shake}>
             <FanIcon className={[styles["fanIcon"]].join(' ')} colorCodeInHex={playerColorCode} />
           </div>
-          {shakeIconArray.slice(-16)}
+          {shakeIconArray}
         </>}
         {gameStage === gameStatus.result && <>
           <div className={styles["background"]}>
@@ -446,8 +452,8 @@ const MobileHomePage = () => {
             })}
             <div className={styles["unit"]}>km</div>
             <div className={styles["remain"]}>
-              <div className={styles["zh"]}>{2884 - score}</div>
-              <div className={styles["en"]}>{2884 - score} to go</div>
+              <div className={styles["zh"]}>{addCommas(2884 - score)}</div>
+              {/* <div className={styles["en"]}>{2884 - score} to go</div> */}
             </div>
           </div>
           <div className={styles["bar-chart"]}>
@@ -459,8 +465,17 @@ const MobileHomePage = () => {
           </div>
           <div className={[styles["selected"], styles[`selected${gameSelected}`]].join(' ')} />
           <a className={styles.shareToFb} href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}&quote=I played Shake Shake Game and got ${score} marks !`} target="_blank">
-            <div className={styles["zh"]} />
-            <div className={styles["en"]} />
+            <div className={styles["face"]}>
+                <TextAnimation 
+                  duration={500}
+                  breakTime={2000}
+                  texts={[
+                    "立即分享",
+                    "Share"
+                  ]}
+                />
+              </div>
+              <div className={styles["shadow"]} />
           </a>
         </>}
         {gameStage === gameStatus.offline && <>
