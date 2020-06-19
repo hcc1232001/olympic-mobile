@@ -383,13 +383,14 @@
   position: absolute;
   top: 0;
   overflow: hidden;
+  z-index: 1;
 }
 .stage-selecting .contentWrapper .zh .textImg,
 .stage-selecting .contentWrapper .en .textImg {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 84vw;
   height: 100%;
   /* background-attachment: fixed; */
   background-position: center;
@@ -1278,7 +1279,7 @@
 }
 @keyframes sportsTextInner {
   0% {
-    left: 84vw;
+    left: 0;
     /* left: 0;
     right: 100%; */
     /* -webkit-clip-path: polygon(0 0, 0 100%, 0% 100%, 0% 0); */
