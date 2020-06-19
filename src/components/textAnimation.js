@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import './textAnimation.css';
+
 const TextAnimation = ({
   texts,
+  textsClass = ['zh', 'en'],
   // delta = 80,
   breakTime = 1500,
   duration = 1000,
@@ -34,9 +37,9 @@ const TextAnimation = ({
       }
       timer.current = setTimeout(()=>changeText(), duration);
       // timer.current = setTimeout(changeText, breakTime);
-      currentTextIdx.current = (currentTextIdx.current + 1) % texts.length;
       // setTextDisplay("");
     } else {
+      currentTextIdx.current = (currentTextIdx.current + 1) % texts.length;
       const currentText = texts[currentTextIdx.current];
       const delta = duration / currentText.length;
       for (let i = 0; i < currentText.length; i++) {
@@ -49,7 +52,7 @@ const TextAnimation = ({
       timer.current = setTimeout(()=>changeText(true), duration + breakTime);
     }
   }
-  return <>{textDisplay}</>;
+  return <div className={'animateText ' + (textsClass && textsClass.length? textsClass[currentTextIdx.current]: '')}>{textDisplay}</div>;
 }
 
 export default TextAnimation;

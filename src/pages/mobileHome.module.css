@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   touch-action: manipulation;
-  color: #535353;
+  color: #000000;
   font-family: SpaceGrotesk, Arial, Helvetica, sans-serif;
 }
 #debug {
@@ -113,8 +113,8 @@
   outline: 0;
   width: 90%;
   background-color: #FFFFFF;
-  border: 1px solid #535353;
-  color: #535353;
+  border: 1px solid #000000;
+  color: #000000;
   line-height: 2;
   text-align: center;
   touch-action: manipulation;
@@ -136,22 +136,23 @@
   width: 60vw;
   height: 25vw;
   left: 20vw;
-  font-size: 6vw;
+  font-size: 8vw;
   text-align: center;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   transform-origin: bottom;
+  line-height: 6vw;
 }
 .stage-idle .counter1 {
   top: 38vw;
-  padding: 4vw 12vw 0 3.5vw;
+  padding: 5vw 12vw 0 3.5vw;
   z-index: 1;
   background-image: url("/media/images/landing-counter1.png");
 }
 .stage-idle .counter2 {
   top: 53vw;
-  padding: 4vw 3.5vw 2vw 12vw;
+  padding: 5vw 3.5vw 2vw 12vw;
   z-index: 2;
   background-image: url("/media/images/landing-counter2.png");
 }
@@ -260,7 +261,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/media/images/background-logo.png');
+  /* background-image: url('/media/images/background-logo.png'); */
   background-size: 300% auto;
   opacity: 0.4;
   /* animation: movingBackground 30s linear infinite; */
@@ -923,6 +924,7 @@
   right: 0;
   width: 18vw;
   height: 9vw;
+  line-height: 11.5vw;
   /* background-image: url("../media/images/result-unit.png");
   background-size: contain;
   background-repeat: no-repeat;
@@ -937,6 +939,7 @@
   top: 100%;
   left: 0;
   height: 9vw;
+  line-height: 9vw;
   /* background-color: #fcf5eb; */
   font-size: 6vw;
 }
@@ -1061,7 +1064,7 @@
   width: 60vw;
   transform: translate(-50%);
   user-select: none;
-  color: #535353;
+  color: #000000;
   text-decoration: none;
 }
 .stage-result .shareToFb .face {
@@ -1306,37 +1309,46 @@
 }
 @keyframes gachaDropAndOpen {
   0% {
-    bottom: 100vh;
+    top: auto;
+    bottom: 100%;
     left: 50vw;
     transform: translate(-50%, 0) rotate(-360DEG);
   }
   10% {
+    /* top: auto; */
     bottom: 8vw;
     left: 50vw;
     transform: translate(-50%, 0) rotate(-300DEG);
   }
   20% {
-    bottom: 50vh;
+    /* top: auto; */
+    bottom: 50%;
     left: 8vw;
     transform: translate(0%, 50%) rotate(-240DEG);
   }
   30% {
-    bottom: calc(100vh - 8vw);
+    /* bottom: calc(100vh - 8vw); */
+    bottom: 100%;
+    /* top: 8vw; */
+    /* bottom: auto; */
     left: 50vw;
-    transform: translate(-50%, 100%) rotate(-180DEG);
+    transform: translate(-50%, 100%) translate(0, 8vw) rotate(-180DEG);
   }
   40% {
-    bottom: 50vh;
+    /* top: auto; */
+    bottom: 50%;
     left: 72vw;
     transform: translate(-50%, 50%) rotate(-120DEG);
   }
   50% {
+    /* top: auto; */
     bottom: 8vw;
     left: 65vw;
     transform: translate(-50%, 0%) rotate(-60DEG);
   }
   57%, 100% {
-    bottom: 25vh;
+    /* top: auto; */
+    bottom: 25%;
     left: 50vw;
     transform: translate(-50%, 50%) rotate(-35DEG);
   }
@@ -1409,7 +1421,6 @@
     background-image: url('/media/images/cheerhk.png');
   }
 }
-
 /* .joinButton {
   position: absolute;
   top: 50%;

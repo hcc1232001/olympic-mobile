@@ -500,10 +500,10 @@ class Room {
         const totalSelected = this.gameChoices.reduce((total, choice) => {
           return total + ~~(choice !== -1);
         }, 0);
-        console.log(JSON.stringify(this.playersStatus, ['playerid', 'joined']));
-        console.log(JSON.stringify(this.gameChoices));
-        console.log("totalPlayers: ", totalPlayers);
-        console.log("totalSelected: ", totalSelected);
+        // log(JSON.stringify(this.playersStatus, ['playerid', 'joined']));
+        // log(JSON.stringify(this.gameChoices));
+        // log("totalPlayers: ", totalPlayers);
+        // log("totalSelected: ", totalSelected);
         if (totalPlayers === totalSelected) {
           this.updateGameStage(gameStatus.selected);
         }

@@ -340,6 +340,10 @@ const MobileHomePage = () => {
             <span>{addCommas(serverData.d)}</span> km
             <div className={styles["counterHints"]}>
               <TextAnimation 
+                textsClass={[
+                  'zh',
+                  'en'
+                ]}
                 texts={[
                   "累積距離",
                   "Cumulative distance"
