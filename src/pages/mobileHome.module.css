@@ -386,6 +386,7 @@
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: auto 8vw;
+  z-index: 1;
 }
 .stage-selecting .contentWrapper .zh {
   animation: sportsText 10s linear infinite both;
@@ -400,6 +401,7 @@
   background-size: 84vw 1596vw;
   position: absolute;
   top: 50%;
+  z-index: 2;
   /* animation: sportSpriteRun 2.5s steps(25) infinite forwards; */
 }
 
