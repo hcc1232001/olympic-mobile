@@ -102,7 +102,7 @@ const MobileHomePage = () => {
   const [preloadProgress] = useImagePreload(imagesArray);
   const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceMotion();
   const [serverData, setServerUrl] = useServerData(config.apiUrl);
-  const [gameStage, setGameStage] = useState(gameStatus['idle']);
+  const [gameStage, setGameStage] = useState(gameStatus['selecting']);
   const [stageChanging, setStageChanging] = useState(gameStatus['offline']);
   const [isJoined, setIsJoined] = useState(false);
   const [playerColorCode, setPlayerColorCode] = useState(playerColorCodeOfIdx[0]);
