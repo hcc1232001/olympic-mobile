@@ -390,8 +390,8 @@ const MobileHomePage = () => {
                     <button onClick={()=>selectGame(idx)} 
                       className={[styles.gameButton, styles[`gameButton${idx}`], (gameSelected === idx? styles.selected: null)].join(' ')}>
                       <div className={styles["contentWrapper"]}>
-                        <div className={styles["zh"]} />
-                        <div className={styles["en"]} />
+                        <div className={styles["zh"]}><div className={styles['textImg']} /></div>
+                        <div className={styles["en"]}><div className={styles['textImg']} /></div>
                         <div className={styles["ani"]} />
                       </div>
                     </button>
