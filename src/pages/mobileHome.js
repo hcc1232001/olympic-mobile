@@ -470,7 +470,7 @@ const MobileHomePage = () => {
             <FanIconSmall className={styles["icon"]} colorCodeInHex={playerColorCode} />
           </div>
           <div className={[styles["selected"], styles[`selected${gameSelected}`]].join(' ')} />
-          <a className={styles.shareToFb} href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin + '/share.html'}&quote=我支持咗喇! 大家都一齊玩啦~\n#體育節 #全民運動\n#邁向東京 #支持香港運動員\nI have showed my support! Let’s join together~\n#FestivalofSport #SportforAll\n#RoadtoTokyo #SupportHKAthletes`} target="_blank">
+          <a className={styles.shareToFb} href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin + '/share.html'}&quote=我支持咗喇! 大家都一齊玩啦~%0A%23體育節 %23全民運動%0A%23邁向東京 %23支持香港運動員%0AI have showed my support! Let’s join together~%0A%23FestivalofSport %23SportforAll%0A%23RoadtoTokyo %23SupportHKAthletes`} target="_blank">
             <div className={styles["face"]}>
                 <TextAnimation 
                   duration={500}
