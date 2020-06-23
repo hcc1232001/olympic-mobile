@@ -102,11 +102,13 @@ const MobileHomePage = () => {
   const [preloadProgress] = useImagePreload(imagesArray);
   const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceMotion();
   const [serverData, setServerUrl] = useServerData(config.apiUrl);
-  const [gameStage, setGameStage] = useState(gameStatus['idle']);
+  // const [gameStage, setGameStage] = useState(gameStatus['idle']);
+  const [gameStage, setGameStage] = useState(gameStatus['result']);
   const [stageChanging, setStageChanging] = useState(gameStatus['offline']);
   const [isJoined, setIsJoined] = useState(false);
   const [playerColorCode, setPlayerColorCode] = useState(playerColorCodeOfIdx[0]);
-  const [gameSelected, setGameSelected] = useState(-1);
+  // const [gameSelected, setGameSelected] = useState(-1);
+  const [gameSelected, setGameSelected] = useState(1);
   const [shakeIconArray, setShakeIconArray] = useState([]);
   const [score, setScore] = useState(0);
   const [alertText, setAlertText] = useState('');
@@ -468,7 +470,7 @@ const MobileHomePage = () => {
             <FanIconSmall className={styles["icon"]} colorCodeInHex={playerColorCode} />
           </div>
           <div className={[styles["selected"], styles[`selected${gameSelected}`]].join(' ')} />
-          <a className={styles.shareToFb} href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin}&quote=I played Shake Shake Game and got ${score} marks !`} target="_blank">
+          <a className={styles.shareToFb} href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.origin + '/share.html'}&quote=我支持咗喇! 大家都一齊玩啦~\n#體育節 #全民運動\n#邁向東京 #支持香港運動員\nI have showed my support! Let’s join together~\n#FestivalofSport #SportforAll\n#RoadtoTokyo #SupportHKAthletes`} target="_blank">
             <div className={styles["face"]}>
                 <TextAnimation 
                   duration={500}

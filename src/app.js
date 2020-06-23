@@ -9,7 +9,7 @@ const getRenderPropForRoute = (pageId) => {
   
 }
 const App = () => {
-  return <BrowserRouter>
+  return <BrowserRouter basename={`/`}>
     <Switch>
       <Route path={routes.home} render={getRenderPropForRoute('home')} />
       <Route path={routes.mobileHome} render={getRenderPropForRoute('mobileHome')} />

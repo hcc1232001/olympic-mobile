@@ -1,0 +1,2 @@
+(this.webpackJsonpolympic=this.webpackJsonpolympic||[]).push([[9],{22:function(e,n,t){"use strict";t.r(n);var a=t(0),c=t.n(a),l=t(83);t(47);n.default=function(){return c.a.createElement(c.a.Fragment,null,c.a.createElement(l.a,null))}}}]);
+//# sourceMappingURL=9.97b15212.chunk.js.map
