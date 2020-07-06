@@ -102,13 +102,13 @@ const MobileHomePage = () => {
   const [preloadProgress] = useImagePreload(imagesArray);
   const [{moveCounter, permissionGranted}, {setMoveCounter, setPermissionGranted}] = useDeviceMotion();
   const [serverData, setServerUrl] = useServerData(config.apiUrl);
-  // const [gameStage, setGameStage] = useState(gameStatus['idle']);
-  const [gameStage, setGameStage] = useState(gameStatus['result']);
+  const [gameStage, setGameStage] = useState(gameStatus['idle']);
+  // const [gameStage, setGameStage] = useState(gameStatus['result']);
   const [stageChanging, setStageChanging] = useState(gameStatus['offline']);
   const [isJoined, setIsJoined] = useState(false);
   const [playerColorCode, setPlayerColorCode] = useState(playerColorCodeOfIdx[0]);
-  // const [gameSelected, setGameSelected] = useState(-1);
-  const [gameSelected, setGameSelected] = useState(1);
+  const [gameSelected, setGameSelected] = useState(-1);
+  // const [gameSelected, setGameSelected] = useState(1);
   const [shakeIconArray, setShakeIconArray] = useState([]);
   const [score, setScore] = useState(0);
   const [alertText, setAlertText] = useState('');
